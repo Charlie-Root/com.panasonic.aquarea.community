@@ -1,0 +1,10 @@
+{
+  "name": "com.panasonic.aquarea.community",
+  "version": "1.0.0",
+  "description": "UNOFFICIAL community Homey app for Panasonic Aquarea air/water heat pumps via Aquarea Smart Cloud. Not affiliated with Panasonic Corporation.",
+  "main": "app.js",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <g fill="none" stroke="#0055A4" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Outdoor unit body -->
+    <rect x="40" y="72" width="176" height="112" rx="14"/>
+    <!-- Fan -->
+    <circle cx="128" cy="128" r="40"/>
+    <path d="M128 100 C142 112 142 144 128 156 M100 128 C112 114 144 114 156 128"/>
+    <!-- Water flow -->
+    <path d="M64 208 q16 -18 32 0 t32 0 t32 0 t32 0" stroke="#3AA0E0"/>
+  </g>
+</svg>

@@ -1,6 +1,6 @@
 {
   "id": "com.panasonic.aquarea.community",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#0055A4",
@@ -12,11 +12,28 @@
     "en": "UNOFFICIAL community app to control Panasonic Aquarea air/water heat pumps via Aquarea Smart Cloud. Not affiliated with, endorsed by, or supported by Panasonic Corporation. Use at your own risk.",
     "fr": "Application communautaire NON OFFICIELLE pour piloter les pompes a chaleur air/eau Panasonic Aquarea via Aquarea Smart Cloud. Sans lien avec Panasonic Corporation. Utilisation aux risques de l'utilisateur."
   },
-  "category": ["climate"],
+  "category": [
+    "climate"
+  ],
   "tags": {
-    "en": ["heat pump", "aquarea", "panasonic", "heating", "climate"],
-    "fr": ["pompe a chaleur", "aquarea", "panasonic", "chauffage", "climat"]
+    "en": [
+      "heat pump",
+      "aquarea",
+      "panasonic",
+      "heating",
+      "climate"
+    ],
+    "fr": [
+      "pompe a chaleur",
+      "aquarea",
+      "panasonic",
+      "chauffage",
+      "climat"
+    ]
   },
+  "platforms": [
+    "local"
+  ],
   "permissions": [],
   "author": {
     "name": "Community"
@@ -52,16 +69,28 @@
             "en": "Tank (DHW)",
             "fr": "Ballon (ECS)"
           },
-          "insightsTitleTrue": { "en": "Tank on", "fr": "Ballon allume" },
-          "insightsTitleFalse": { "en": "Tank off", "fr": "Ballon eteint" }
+          "insightsTitleTrue": {
+            "en": "Tank on",
+            "fr": "Ballon allume"
+          },
+          "insightsTitleFalse": {
+            "en": "Tank off",
+            "fr": "Ballon eteint"
+          }
         },
         "onoff.zone": {
           "title": {
             "en": "Heating zone",
             "fr": "Zone de chauffage"
           },
-          "insightsTitleTrue": { "en": "Zone on", "fr": "Zone allumee" },
-          "insightsTitleFalse": { "en": "Zone off", "fr": "Zone eteinte" }
+          "insightsTitleTrue": {
+            "en": "Zone on",
+            "fr": "Zone allumee"
+          },
+          "insightsTitleFalse": {
+            "en": "Zone off",
+            "fr": "Zone eteinte"
+          }
         },
         "measure_temperature": {
           "title": {
@@ -107,11 +136,41 @@
             "fr": "Mode de fonctionnement"
           },
           "values": [
-            { "id": "auto", "title": { "en": "Auto", "fr": "Auto" } },
-            { "id": "heat", "title": { "en": "Heat", "fr": "Chauffage" } },
-            { "id": "heat_tank", "title": { "en": "Heat + hot water", "fr": "Chauffage + ECS" } },
-            { "id": "cool", "title": { "en": "Cool", "fr": "Rafraichissement" } },
-            { "id": "off", "title": { "en": "Off", "fr": "Arret" } }
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto",
+                "fr": "Auto"
+              }
+            },
+            {
+              "id": "heat",
+              "title": {
+                "en": "Heat",
+                "fr": "Chauffage"
+              }
+            },
+            {
+              "id": "heat_tank",
+              "title": {
+                "en": "Heat + hot water",
+                "fr": "Chauffage + ECS"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "en": "Cool",
+                "fr": "Rafraichissement"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "fr": "Arret"
+              }
+            }
           ]
         },
         "measure_temperature.outdoor": {
@@ -121,8 +180,12 @@
           }
         }
       },
-      "platforms": ["local", "cloud"],
-      "connectivity": ["cloud"],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
       "images": {
         "small": "/drivers/aquarea_heatpump/assets/images/small.png",
         "large": "/drivers/aquarea_heatpump/assets/images/large.png",
@@ -143,12 +206,16 @@
               "fr": "Mot de passe"
             }
           },
-          "navigation": { "next": "list_devices" }
+          "navigation": {
+            "next": "list_devices"
+          }
         },
         {
           "id": "list_devices",
           "template": "list_devices",
-          "navigation": { "next": "add_devices" }
+          "navigation": {
+            "next": "add_devices"
+          }
         },
         {
           "id": "add_devices",
@@ -177,7 +244,10 @@
               "value": 300,
               "min": 60,
               "max": 3600,
-              "units": { "en": "s", "fr": "s" }
+              "units": {
+                "en": "s",
+                "fr": "s"
+              }
             }
           ]
         },

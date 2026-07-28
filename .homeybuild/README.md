@@ -11,7 +11,7 @@
 > *This is a community project and is **not affiliated with, endorsed by, or
 > supported by Panasonic Corporation** in any way. Use at your own risk.*
 
-Pilotage des pompes à chaleur **air/eau Panasonic Aquarea** depuis Homey, via le
+Pilotage des pompes à chaleur **air/eau et eau/eau Panasonic Aquarea** depuis Homey, via le
 service web **Aquarea Smart Cloud** (`aquarea-smart.panasonic.com`).
 
 ---

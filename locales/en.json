@@ -1,0 +1,6 @@
+{
+  "error": {
+    "missing_credentials": "Missing credentials. Please remove and re-pair the device.",
+    "connection_failed": "Cannot connect to Aquarea: {message}"
+  }
+}

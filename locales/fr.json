@@ -1,0 +1,6 @@
+{
+  "error": {
+    "missing_credentials": "Identifiants manquants. Supprimez et re-appairez l'appareil.",
+    "connection_failed": "Connexion Aquarea impossible : {message}"
+  }
+}

@@ -35,7 +35,7 @@ class AquareaDevice extends Homey.Device {
     const password = this.getStoreValue('password');
 
     if (!username || !password) {
-      this.setUnavailable('Identifiants manquants. Supprimez et re-appairez l\'appareil.');
+      this.setUnavailable(this.homey.__('error.missing_credentials'));
       return;
     }
 
@@ -170,7 +170,7 @@ class AquareaDevice extends Homey.Device {
       this.error('Polling error:', err.message);
       // On garde l'appareil dispo sauf erreur persistante d'auth.
       if (/identifiants|invalid|2FA|authorization code|access token/i.test(err.message)) {
-        await this.setUnavailable(`Connexion Aquarea impossible : ${err.message}`);
+        await this.setUnavailable(this.homey.__('error.connection_failed', { message: err.message }));
       }
     } finally {
       this._polling = false;

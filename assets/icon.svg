@@ -1,17 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-  <!-- Fond Carré Arrondi Bleu Panasonic -->
-  <rect width="512" height="512" rx="100" fill="#0059B3"/>
-
-  <!-- Symbole Maison / Thermique -->
-  <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Contour de maison -->
-    <path d="M136 220 L256 120 L376 220 V380 H136 Z" stroke-width="24"/>
-
-    <!-- Vagues thermiques (style Aquarea) -->
-    <path d="M210 320 C230 290, 230 280, 256 280 C282 280, 282 290, 302 320" stroke-width="18"/>
-    <path d="M210 270 C230 240, 230 230, 256 230 C282 230, 282 240, 302 270" stroke-width="18"/>
-
-    <!-- Petit point chaud / froid supérieur -->
-    <circle cx="256" cy="185" r="10" fill="#FFFFFF"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <g fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Contour Maison -->
+    <path d="M 40 115 L 128 35 L 216 115 V 215 H 40 Z" stroke="#0055A4"/>
+    <!-- Vagues thermiques Aquarea -->
+    <path d="M 72 165 q 28 -22 56 0 t 56 0" stroke="#3AA0E0"/>
+    <path d="M 72 125 q 28 -22 56 0 t 56 0" stroke="#0055A4"/>
   </g>
 </svg>

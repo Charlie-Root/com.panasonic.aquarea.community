@@ -315,13 +315,20 @@ class AquareaDevice extends Homey.Device {
     try {
       const c = await this.client.getConsumptionToday(this.deviceId);
       if (!c) return;
+
+      const kwhCost = Number(this.getSetting('kwh_cost')) || 0;
+      const calc = (kwh, cloudCost) => {
+        if (kwhCost > 0) return Math.round(kwh * kwhCost * 1000) / 1000;
+        return cloudCost;
+      };
+
       await this._setCapability('meter_power.heat', c.heatKwh);
       await this._setCapability('meter_power.cool', c.coolKwh);
-      await this._setCapability('measure_cost.heat', c.heatCost);
-      await this._setCapability('measure_cost.cool', c.coolCost);
+      await this._setCapability('measure_cost.heat', calc(c.heatKwh, c.heatCost));
+      await this._setCapability('measure_cost.cool', calc(c.coolKwh, c.coolCost));
       if (this._layout.hasTank) {
         await this._setCapability('meter_power.tank', c.tankKwh);
-        await this._setCapability('measure_cost.tank', c.tankCost);
+        await this._setCapability('measure_cost.tank', calc(c.tankKwh, c.tankCost));
       }
     } catch (err) {
       this.error('Consumption poll error:', err.message);
@@ -462,16 +469,19 @@ class AquareaDevice extends Homey.Device {
     }
     if (this.hasCapability('measure_cost.heat')) {
       jobs.push(this.setCapabilityOptions('measure_cost.heat', {
+        icon: '/assets/capabilities/cost.svg',
         title: { en: 'Heat cost today', fr: "Cout chauffage aujourd'hui" },
       }));
     }
     if (this.hasCapability('measure_cost.cool')) {
       jobs.push(this.setCapabilityOptions('measure_cost.cool', {
+        icon: '/assets/capabilities/cost.svg',
         title: { en: 'Cool cost today', fr: "Cout climatisation aujourd'hui" },
       }));
     }
     if (this.hasCapability('measure_cost.tank')) {
       jobs.push(this.setCapabilityOptions('measure_cost.tank', {
+        icon: '/assets/capabilities/cost.svg',
         title: { en: 'Tank cost today', fr: "Cout ballon aujourd'hui" },
       }));
     }
@@ -593,8 +603,8 @@ class AquareaDevice extends Homey.Device {
     // interrupteurs sur ce qui vient d'etre envoye (cf. AquareaClient.setMode).
     if (value !== 'off') {
       await this._commit('onoff.zone', true);
-      if (value === 'heat_tank') await this._commit('onoff.tank', true);
-      else if (value === 'heat') await this._commit('onoff.tank', false);
+      if (value === 'heat_tank' || value === 'cool_tank') await this._commit('onoff.tank', true);
+      else if (value === 'heat' || value === 'cool') await this._commit('onoff.tank', false);
     }
     this._refreshSoon();
   }
@@ -602,22 +612,53 @@ class AquareaDevice extends Homey.Device {
   async _onSetTankOnoff(value) {
     this.log(`Command: tank on/off -> ${value}`);
     const on = Boolean(value);
-    await this.client.setTankOperation(this.deviceId, on);
-    await this._commit('onoff.tank', on);
 
-    // En chauffage, l'autorisation ECS distingue 'heat' de 'heat_tank'.
+    // En chauffage ou rafraichissement, l'autorisation ECS distingue le mode simple du mode + ECS.
+    // On prefere appeler setMode car cela garantit la coherence cote cloud Panasonic
+    // (certains modeles ignorent une commande tankStatus seule si elle contredit le mode).
     const mode = this.getCapabilityValue('thermostat_mode');
     if (mode === 'heat' || mode === 'heat_tank') {
-      await this._commit('thermostat_mode', on ? 'heat_tank' : 'heat');
+      const newMode = on ? 'heat_tank' : 'heat';
+      await this.client.setMode(this.deviceId, newMode);
+      await this._commit('thermostat_mode', newMode);
+    } else if (mode === 'cool' || mode === 'cool_tank') {
+      const newMode = on ? 'cool_tank' : 'cool';
+      await this.client.setMode(this.deviceId, newMode);
+      await this._commit('thermostat_mode', newMode);
+    } else {
+      await this.client.setTankOperation(this.deviceId, on);
     }
+
+    await this._commit('onoff.tank', on);
     this._refreshSoon();
   }
 
   async _onSetZoneOnoff(value) {
     this.log(`Command: zone on/off -> ${value} (zone ${this.zoneId})`);
     const on = Boolean(value);
+
+    // Si on éteint la zone alors qu'on est en mode chauffage/clim,
+    // on passe en mode 'off' global si le ballon est aussi éteint ou absent.
+    // Mais Panasonic permet souvent d'éteindre juste la zone.
+    // Par sécurité et cohérence avec le reste, on utilise setZoneOperation
+    // mais on s'assure que le thermostat_mode reflète l'extinction si c'est global.
     await this.client.setZoneOperation(this.deviceId, on, this.zoneId);
     await this._commit('onoff.zone', on);
+
+    if (!on) {
+      const tankOn = this.getCapabilityValue('onoff.tank');
+      if (!tankOn) {
+        // Si tout est éteint, on s'assure que le mode est 'off'
+        await this._commit('thermostat_mode', 'off');
+      }
+    } else {
+      // Si on rallume la zone, on s'assure que le mode n'est pas 'off'
+      const mode = this.getCapabilityValue('thermostat_mode');
+      if (mode === 'off') {
+        await this._commit('thermostat_mode', 'heat'); // Par défaut
+      }
+    }
+
     this._refreshSoon();
   }
 

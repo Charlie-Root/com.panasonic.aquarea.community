@@ -416,7 +416,8 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "insights": true
+      "insights": true,
+      "icon": "/assets/capabilities/cost.svg"
     }
   },
   "drivers": [
@@ -550,10 +551,10 @@
               }
             },
             {
-              "id": "off",
+              "id": "cool_tank",
               "title": {
-                "en": "Off",
-                "fr": "Arret"
+                "en": "Cool + hot water",
+                "fr": "Rafraichissement + ECS"
               }
             }
           ]
@@ -632,6 +633,25 @@
               "units": {
                 "en": "s",
                 "fr": "s"
+              }
+            },
+            {
+              "id": "kwh_cost",
+              "type": "number",
+              "label": {
+                "en": "Energy cost per kWh",
+                "fr": "Cout de l'energie par kWh"
+              },
+              "hint": {
+                "en": "If set, the app will calculate the cost from the reported energy. If empty (0), it uses the cost reported by the cloud (usually 0 if not set in Aquarea app).",
+                "fr": "Si renseigne, l'app calcule le cout a partir de l'energie remontee. Si vide (0), utilise le cout remonte par le cloud (souvent 0 si non configure dans l'app Aquarea)."
+              },
+              "value": 0,
+              "min": 0,
+              "decimals": 4,
+              "units": {
+                "en": "€/kWh",
+                "fr": "€/kWh"
               }
             }
           ]

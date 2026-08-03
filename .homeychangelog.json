@@ -19,5 +19,8 @@
   },
   "1.0.6": {
     "en": "fix image for review and translation"
+  },
+  "1.0.7": {
+    "en": "Add some metrics and apply split cool mode"
   }
 }

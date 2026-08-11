@@ -402,6 +402,59 @@
         }
       ]
     },
+    "convector_fan_speed": {
+      "type": "enum",
+      "title": {
+        "en": "Fan speed",
+        "fr": "Vitesse ventilateur"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "insights": false,
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Auto",
+            "fr": "Auto"
+          }
+        },
+        {
+          "id": "max",
+          "title": {
+            "en": "Max",
+            "fr": "Max"
+          }
+        },
+        {
+          "id": "night",
+          "title": {
+            "en": "Min",
+            "fr": "Min"
+          }
+        }
+      ]
+    },
+    "convector_flap": {
+      "type": "boolean",
+      "title": {
+        "en": "Flap",
+        "fr": "Volet"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "insights": false,
+      "insightsTitleTrue": {
+        "en": "Flap open",
+        "fr": "Volet ouvert"
+      },
+      "insightsTitleFalse": {
+        "en": "Flap closed",
+        "fr": "Volet ferme"
+      }
+    },
     "measure_cost": {
       "type": "number",
       "title": {
@@ -422,6 +475,155 @@
   },
   "drivers": [
     {
+      "id": "aquarea_convector",
+      "name": {
+        "en": "Aquarea Convector (Aquarea Home)",
+        "fr": "Convecteur Aquarea (Aquarea Home)"
+      },
+      "class": "thermostat",
+      "capabilities": [
+        "onoff",
+        "target_temperature",
+        "measure_temperature",
+        "thermostat_mode",
+        "convector_fan_speed",
+        "convector_flap"
+      ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "min": 5,
+          "max": 40,
+          "step": 1,
+          "units": {
+            "en": "°C",
+            "fr": "°C"
+          }
+        },
+        "thermostat_mode": {
+          "title": {
+            "en": "Operation mode",
+            "fr": "Mode de fonctionnement"
+          },
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto",
+                "fr": "Auto"
+              }
+            },
+            {
+              "id": "heat",
+              "title": {
+                "en": "Heat",
+                "fr": "Chauffage"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "en": "Cool",
+                "fr": "Rafraichissement"
+              }
+            }
+          ]
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/aquarea_convector/assets/images/small.png",
+        "large": "/drivers/aquarea_convector/assets/images/large.png",
+        "xlarge": "/drivers/aquarea_convector/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "usernameLabel": {
+              "en": "Aquarea Home e-mail",
+              "fr": "E-mail Aquarea Home"
+            },
+            "passwordLabel": {
+              "en": "Password",
+              "fr": "Mot de passe"
+            }
+          },
+          "navigation": {
+            "next": "list_devices"
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Polling",
+            "fr": "Interrogation (polling)"
+          },
+          "children": [
+            {
+              "id": "poll_interval",
+              "type": "number",
+              "label": {
+                "en": "Polling interval (seconds)",
+                "fr": "Intervalle d'interrogation (secondes)"
+              },
+              "hint": {
+                "en": "Time between cloud refreshes. Minimum 30 s, recommended 60 s.",
+                "fr": "Delai entre deux rafraichissements. Minimum 30 s, recommande 60 s."
+              },
+              "value": 60,
+              "min": 30,
+              "max": 3600,
+              "units": {
+                "en": "s",
+                "fr": "s"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "About / Disclaimer",
+            "fr": "A propos / Avertissement"
+          },
+          "children": [
+            {
+              "id": "disclaimer",
+              "type": "label",
+              "label": {
+                "en": "Disclaimer",
+                "fr": "Avertissement"
+              },
+              "value": "This is an UNOFFICIAL community app for Aquarea Home (Solution Tech Srl). Not affiliated with Panasonic Corporation or Solution Tech Srl. Uses a private undocumented API that may change at any time. Use at your own risk.",
+              "hint": {
+                "en": "Community app - not affiliated with Panasonic Corporation.",
+                "fr": "Application communautaire - sans lien avec Panasonic Corporation."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "aquarea_heatpump",
       "name": {
         "en": "Aquarea Heat Pump",
@@ -436,6 +638,7 @@
         "onoff.zone",
         "measure_temperature",
         "measure_temperature.zone",
+        "measure_temperature.indoor",
         "measure_temperature.outdoor",
         "operation_direction",
         "special_status",
@@ -563,6 +766,12 @@
           "title": {
             "en": "Outdoor temperature",
             "fr": "Temperature exterieure"
+          }
+        },
+        "measure_temperature.indoor": {
+          "title": {
+            "en": "Indoor (ambient) temperature",
+            "fr": "Temperature ambiante interieure"
           }
         }
       },

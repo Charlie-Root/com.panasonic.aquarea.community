@@ -626,8 +626,8 @@
     {
       "id": "aquarea_heatpump",
       "name": {
-        "en": "Aquarea Heat Pump",
-        "fr": "Pompe a chaleur Aquarea"
+        "en": "Aquarea Heat Pump (Comfort Cloud)",
+        "fr": "Pompe a chaleur Aquarea (Comfort Cloud)"
       },
       "class": "thermostat",
       "capabilities": [
@@ -793,8 +793,8 @@
           "options": {
             "logo": "logo.png",
             "usernameLabel": {
-              "en": "Aquarea Smart Cloud e-mail",
-              "fr": "E-mail Aquarea Smart Cloud"
+              "en": "Panasonic Comfort Cloud e-mail",
+              "fr": "E-mail Panasonic Comfort Cloud"
             },
             "passwordLabel": {
               "en": "Password",

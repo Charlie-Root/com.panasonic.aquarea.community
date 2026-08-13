@@ -127,8 +127,8 @@
         "fr": "Mode silencieux"
       },
       "getable": true,
-      "setable": false,
-      "uiComponent": "sensor",
+      "setable": true,
+      "uiComponent": "picker",
       "insights": false,
       "icon": "/assets/capabilities/quiet_mode.svg",
       "values": [
@@ -176,8 +176,8 @@
         "fr": "Mode puissant"
       },
       "getable": true,
-      "setable": false,
-      "uiComponent": "sensor",
+      "setable": true,
+      "uiComponent": "picker",
       "insights": false,
       "icon": "/assets/capabilities/powerful_mode.svg",
       "values": [
@@ -225,8 +225,8 @@
         "fr": "Mode vacances"
       },
       "getable": true,
-      "setable": false,
-      "uiComponent": "sensor",
+      "setable": true,
+      "uiComponent": "toggle",
       "insights": true,
       "insightsTitleTrue": {
         "en": "Holiday mode on",

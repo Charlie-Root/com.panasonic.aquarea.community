@@ -36,6 +36,9 @@ const COMMAND_HANDLERS = {
   'thermostat_mode': '_onCapabilityThermostatMode',
   'onoff.tank': '_onSetTankOnoff',
   'onoff.zone': '_onSetZoneOnoff',
+  'quiet_mode': '_onSetQuietMode',
+  'powerful_mode': '_onSetPowerfulMode',
+  'holiday_mode': '_onSetHolidayMode',
 };
 
 class AquareaDevice extends Homey.Device {
@@ -659,6 +662,28 @@ class AquareaDevice extends Homey.Device {
       }
     }
 
+    this._refreshSoon();
+  }
+
+  async _onSetQuietMode(value) {
+    this.log(`Command: quiet mode -> ${value}`);
+    await this.client.setQuietMode(this.deviceId, value);
+    await this._commit('quiet_mode', value);
+    this._refreshSoon();
+  }
+
+  async _onSetPowerfulMode(value) {
+    this.log(`Command: powerful mode -> ${value}`);
+    await this.client.setPowerfulMode(this.deviceId, value);
+    await this._commit('powerful_mode', value);
+    this._refreshSoon();
+  }
+
+  async _onSetHolidayMode(value) {
+    const on = Boolean(value);
+    this.log(`Command: holiday mode -> ${on}`);
+    await this.client.setHolidayMode(this.deviceId, on);
+    await this._commit('holiday_mode', on);
     this._refreshSoon();
   }
 

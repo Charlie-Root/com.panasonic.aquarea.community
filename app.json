@@ -1,6 +1,6 @@
 {
   "id": "com.panasonic.aquarea.community",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#0055A4",
@@ -481,7 +481,10 @@
           "en": "Aquarea [[capability]] is active",
           "fr": "Aquarea [[capability]] est actif"
         },
-        "titleFormatted": { "en": "[[device]]: [[capability]] is active", "fr": "[[device]] : [[capability]] est actif" },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] is active",
+          "fr": "[[device]] : [[capability]] est actif"
+        },
         "args": [
           {
             "name": "device",
@@ -492,14 +495,62 @@
             "name": "capability",
             "type": "dropdown",
             "values": [
-              { "id": "pump_running", "title": { "en": "Circulation pump", "fr": "Circulateur" } },
-              { "id": "defrost_active", "title": { "en": "Defrosting", "fr": "Degivrage" } },
-              { "id": "force_dhw", "title": { "en": "Forced hot water", "fr": "Eau chaude forcee" } },
-              { "id": "force_heater", "title": { "en": "Backup heater", "fr": "Appoint electrique" } },
-              { "id": "bivalent_active", "title": { "en": "Bivalent source", "fr": "Source bivalente" } },
-              { "id": "electric_anode", "title": { "en": "Electric anode", "fr": "Anode electrique" } },
-              { "id": "holiday_mode", "title": { "en": "Holiday mode", "fr": "Mode vacances" } },
-              { "id": "convector_flap", "title": { "en": "Convector flap", "fr": "Volet du convecteur" } }
+              {
+                "id": "pump_running",
+                "title": {
+                  "en": "Circulation pump",
+                  "fr": "Circulateur"
+                }
+              },
+              {
+                "id": "defrost_active",
+                "title": {
+                  "en": "Defrosting",
+                  "fr": "Degivrage"
+                }
+              },
+              {
+                "id": "force_dhw",
+                "title": {
+                  "en": "Forced hot water",
+                  "fr": "Eau chaude forcee"
+                }
+              },
+              {
+                "id": "force_heater",
+                "title": {
+                  "en": "Backup heater",
+                  "fr": "Appoint electrique"
+                }
+              },
+              {
+                "id": "bivalent_active",
+                "title": {
+                  "en": "Bivalent source",
+                  "fr": "Source bivalente"
+                }
+              },
+              {
+                "id": "electric_anode",
+                "title": {
+                  "en": "Electric anode",
+                  "fr": "Anode electrique"
+                }
+              },
+              {
+                "id": "holiday_mode",
+                "title": {
+                  "en": "Holiday mode",
+                  "fr": "Mode vacances"
+                }
+              },
+              {
+                "id": "convector_flap",
+                "title": {
+                  "en": "Convector flap",
+                  "fr": "Volet du convecteur"
+                }
+              }
             ]
           }
         ]
@@ -510,88 +561,292 @@
           "en": "Aquarea [[capability]] equals [[value]]",
           "fr": "Aquarea [[capability]] est egal a [[value]]"
         },
-        "titleFormatted": { "en": "[[device]]: [[capability]] equals [[value]]", "fr": "[[device]] : [[capability]] est egal a [[value]]" },
+        "titleFormatted": {
+          "en": "[[device]]: [[capability]] equals [[value]]",
+          "fr": "[[device]] : [[capability]] est egal a [[value]]"
+        },
         "args": [
-          { "name": "device", "type": "device", "filter": "capabilities=operation_direction|special_status|quiet_mode|powerful_mode|convector_fan_speed" },
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=operation_direction|special_status|quiet_mode|powerful_mode|convector_fan_speed"
+          },
           {
             "name": "capability",
             "type": "dropdown",
             "values": [
-              { "id": "operation_direction", "title": { "en": "Current operation", "fr": "Fonctionnement en cours" } },
-              { "id": "special_status", "title": { "en": "Eco / Comfort preset", "fr": "Prereglage Eco / Confort" } },
-              { "id": "quiet_mode", "title": { "en": "Quiet mode", "fr": "Mode silencieux" } },
-              { "id": "powerful_mode", "title": { "en": "Powerful mode", "fr": "Mode puissant" } },
-              { "id": "convector_fan_speed", "title": { "en": "Fan speed", "fr": "Vitesse ventilateur" } }
+              {
+                "id": "operation_direction",
+                "title": {
+                  "en": "Current operation",
+                  "fr": "Fonctionnement en cours"
+                }
+              },
+              {
+                "id": "special_status",
+                "title": {
+                  "en": "Eco / Comfort preset",
+                  "fr": "Prereglage Eco / Confort"
+                }
+              },
+              {
+                "id": "quiet_mode",
+                "title": {
+                  "en": "Quiet mode",
+                  "fr": "Mode silencieux"
+                }
+              },
+              {
+                "id": "powerful_mode",
+                "title": {
+                  "en": "Powerful mode",
+                  "fr": "Mode puissant"
+                }
+              },
+              {
+                "id": "convector_fan_speed",
+                "title": {
+                  "en": "Fan speed",
+                  "fr": "Vitesse ventilateur"
+                }
+              }
             ]
           },
-          { "name": "value", "type": "text", "placeholder": { "en": "Value", "fr": "Valeur" } }
+          {
+            "name": "value",
+            "type": "text",
+            "placeholder": {
+              "en": "Value",
+              "fr": "Valeur"
+            }
+          }
         ]
       }
     ],
     "actions": [
       {
         "id": "set_quiet_mode",
-        "title": { "en": "Set quiet mode to [[mode]]", "fr": "Regler le mode silencieux sur [[mode]]" },
-        "titleFormatted": { "en": "Set [[device]] quiet mode to [[mode]]", "fr": "Regler le mode silencieux de [[device]] sur [[mode]]" },
+        "title": {
+          "en": "Set quiet mode to [[mode]]",
+          "fr": "Regler le mode silencieux sur [[mode]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] quiet mode to [[mode]]",
+          "fr": "Regler le mode silencieux de [[device]] sur [[mode]]"
+        },
         "args": [
-          { "name": "device", "type": "device", "filter": "capabilities=quiet_mode" },
-          { "name": "mode", "type": "dropdown", "values": [
-            { "id": "off", "title": { "en": "Off", "fr": "Arret" } },
-            { "id": "level1", "title": { "en": "Level 1", "fr": "Niveau 1" } },
-            { "id": "level2", "title": { "en": "Level 2", "fr": "Niveau 2" } },
-            { "id": "level3", "title": { "en": "Level 3", "fr": "Niveau 3" } }
-          ] }
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=quiet_mode"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Arret"
+                }
+              },
+              {
+                "id": "level1",
+                "title": {
+                  "en": "Level 1",
+                  "fr": "Niveau 1"
+                }
+              },
+              {
+                "id": "level2",
+                "title": {
+                  "en": "Level 2",
+                  "fr": "Niveau 2"
+                }
+              },
+              {
+                "id": "level3",
+                "title": {
+                  "en": "Level 3",
+                  "fr": "Niveau 3"
+                }
+              }
+            ]
+          }
         ]
       },
       {
         "id": "set_powerful_mode",
-        "title": { "en": "Set powerful mode to [[mode]]", "fr": "Regler le mode puissant sur [[mode]]" },
-        "titleFormatted": { "en": "Set [[device]] powerful mode to [[mode]]", "fr": "Regler le mode puissant de [[device]] sur [[mode]]" },
+        "title": {
+          "en": "Set powerful mode to [[mode]]",
+          "fr": "Regler le mode puissant sur [[mode]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] powerful mode to [[mode]]",
+          "fr": "Regler le mode puissant de [[device]] sur [[mode]]"
+        },
         "args": [
-          { "name": "device", "type": "device", "filter": "capabilities=powerful_mode" },
-          { "name": "mode", "type": "dropdown", "values": [
-            { "id": "off", "title": { "en": "Off", "fr": "Arret" } },
-            { "id": "30min", "title": { "en": "30 minutes", "fr": "30 minutes" } },
-            { "id": "60min", "title": { "en": "60 minutes", "fr": "60 minutes" } },
-            { "id": "90min", "title": { "en": "90 minutes", "fr": "90 minutes" } }
-          ] }
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=powerful_mode"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Arret"
+                }
+              },
+              {
+                "id": "30min",
+                "title": {
+                  "en": "30 minutes",
+                  "fr": "30 minutes"
+                }
+              },
+              {
+                "id": "60min",
+                "title": {
+                  "en": "60 minutes",
+                  "fr": "60 minutes"
+                }
+              },
+              {
+                "id": "90min",
+                "title": {
+                  "en": "90 minutes",
+                  "fr": "90 minutes"
+                }
+              }
+            ]
+          }
         ]
       },
       {
         "id": "set_holiday_mode",
-        "title": { "en": "Set holiday mode [[state]]", "fr": "Mettre le mode vacances sur [[state]]" },
-        "titleFormatted": { "en": "Set [[device]] holiday mode [[state]]", "fr": "Mettre le mode vacances de [[device]] sur [[state]]" },
+        "title": {
+          "en": "Set holiday mode [[state]]",
+          "fr": "Mettre le mode vacances sur [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] holiday mode [[state]]",
+          "fr": "Mettre le mode vacances de [[device]] sur [[state]]"
+        },
         "args": [
-          { "name": "device", "type": "device", "filter": "capabilities=holiday_mode" },
-          { "name": "state", "type": "dropdown", "values": [
-            { "id": "on", "title": { "en": "On", "fr": "Actif" } },
-            { "id": "off", "title": { "en": "Off", "fr": "Inactif" } }
-          ] }
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=holiday_mode"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "On",
+                  "fr": "Actif"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "fr": "Inactif"
+                }
+              }
+            ]
+          }
         ]
       },
       {
         "id": "set_convector_fan_speed",
-        "title": { "en": "Set fan speed to [[speed]]", "fr": "Regler la vitesse du ventilateur sur [[speed]]" },
-        "titleFormatted": { "en": "Set [[device]] fan speed to [[speed]]", "fr": "Regler la vitesse du ventilateur de [[device]] sur [[speed]]" },
+        "title": {
+          "en": "Set fan speed to [[speed]]",
+          "fr": "Regler la vitesse du ventilateur sur [[speed]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] fan speed to [[speed]]",
+          "fr": "Regler la vitesse du ventilateur de [[device]] sur [[speed]]"
+        },
         "args": [
-          { "name": "device", "type": "device", "filter": "capabilities=convector_fan_speed" },
-          { "name": "speed", "type": "dropdown", "values": [
-            { "id": "auto", "title": { "en": "Auto", "fr": "Auto" } },
-            { "id": "night", "title": { "en": "Min", "fr": "Min" } },
-            { "id": "max", "title": { "en": "Max", "fr": "Max" } }
-          ] }
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=convector_fan_speed"
+          },
+          {
+            "name": "speed",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto",
+                  "fr": "Auto"
+                }
+              },
+              {
+                "id": "night",
+                "title": {
+                  "en": "Min",
+                  "fr": "Min"
+                }
+              },
+              {
+                "id": "max",
+                "title": {
+                  "en": "Max",
+                  "fr": "Max"
+                }
+              }
+            ]
+          }
         ]
       },
       {
         "id": "set_convector_flap",
-        "title": { "en": "Set convector flap [[state]]", "fr": "Mettre le volet du convecteur sur [[state]]" },
-        "titleFormatted": { "en": "Set [[device]] convector flap [[state]]", "fr": "Mettre le volet du convecteur de [[device]] sur [[state]]" },
+        "title": {
+          "en": "Set convector flap [[state]]",
+          "fr": "Mettre le volet du convecteur sur [[state]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] convector flap [[state]]",
+          "fr": "Mettre le volet du convecteur de [[device]] sur [[state]]"
+        },
         "args": [
-          { "name": "device", "type": "device", "filter": "capabilities=convector_flap" },
-          { "name": "state", "type": "dropdown", "values": [
-            { "id": "open", "title": { "en": "Open", "fr": "Ouvert" } },
-            { "id": "closed", "title": { "en": "Closed", "fr": "Ferme" } }
-          ] }
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=convector_flap"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "open",
+                "title": {
+                  "en": "Open",
+                  "fr": "Ouvert"
+                }
+              },
+              {
+                "id": "closed",
+                "title": {
+                  "en": "Closed",
+                  "fr": "Ferme"
+                }
+              }
+            ]
+          }
         ]
       }
     ]

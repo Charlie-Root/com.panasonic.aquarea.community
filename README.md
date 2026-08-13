@@ -8,4 +8,4 @@ The app provides Flow cards for the Aquarea-specific capabilities in addition to
 
 - Conditions for boolean states (circulation pump, defrost, forced hot water, backup heater, bivalent source, electric anode, holiday mode and convector flap).
 - Conditions for enum states (current operation, Eco/Comfort preset, quiet mode, powerful mode and fan speed).
-- Actions to control quiet mode, powerful mode, holiday mode, convector fan speed and convector flap.
+- Actions to set the heating-zone setpoint (or weather-curve offset) and to control quiet mode, powerful mode, holiday mode, convector fan speed and convector flap.

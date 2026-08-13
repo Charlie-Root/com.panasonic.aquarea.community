@@ -625,6 +625,35 @@
     ],
     "actions": [
       {
+        "id": "set_zone_setpoint",
+        "title": {
+          "en": "Set zone setpoint / curve offset to [[value]]",
+          "fr": "Regler la consigne zone / le decalage de loi d'eau sur [[value]]"
+        },
+        "titleFormatted": {
+          "en": "Set [[device]] zone setpoint / curve offset to [[value]]",
+          "fr": "Regler la consigne zone / le decalage de loi d'eau de [[device]] sur [[value]]"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=target_temperature.zone"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "title": {
+              "en": "Setpoint / offset",
+              "fr": "Consigne / decalage"
+            },
+            "min": -5,
+            "max": 60,
+            "step": 1
+          }
+        ]
+      },
+      {
         "id": "set_quiet_mode",
         "title": {
           "en": "Set quiet mode to [[mode]]",
@@ -1099,7 +1128,7 @@
         },
         "thermostat_mode": {
           "title": {
-            "en": "Operating mode",
+            "en": "Operation mode",
             "fr": "Mode de fonctionnement"
           },
           "values": [

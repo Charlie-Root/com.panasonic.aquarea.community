@@ -40,6 +40,9 @@ class AquareaApp extends Homey.App {
       ));
 
     const actions = {
+      set_zone_setpoint: ({ device, value }) => (
+        device.triggerCapabilityListener('target_temperature.zone', Number(value))
+      ),
       set_quiet_mode: ({ device, mode }) => device.triggerCapabilityListener('quiet_mode', mode),
       set_powerful_mode: ({ device, mode }) => device.triggerCapabilityListener('powerful_mode', mode),
       set_holiday_mode: ({ device, state }) => device.triggerCapabilityListener('holiday_mode', state === 'on'),

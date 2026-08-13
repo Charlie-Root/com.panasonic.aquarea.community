@@ -23,6 +23,33 @@ class AquareaApp extends Homey.App {
     process.on('unhandledRejection', reason => {
       this.error('Unhandled promise rejection:', reason);
     });
+
+    this._registerFlowCards();
+  }
+
+  _registerFlowCards() {
+    this.homey.flow.getConditionCard('capability_is_true')
+      .registerRunListener(({ device, capability }) => (
+        device.hasCapability(capability) && device.getCapabilityValue(capability) === true
+      ));
+
+    this.homey.flow.getConditionCard('capability_equals')
+      .registerRunListener(({ device, capability, value }) => (
+        device.hasCapability(capability)
+        && String(device.getCapabilityValue(capability)) === String(value).trim()
+      ));
+
+    const actions = {
+      set_quiet_mode: ({ device, mode }) => device.triggerCapabilityListener('quiet_mode', mode),
+      set_powerful_mode: ({ device, mode }) => device.triggerCapabilityListener('powerful_mode', mode),
+      set_holiday_mode: ({ device, state }) => device.triggerCapabilityListener('holiday_mode', state === 'on'),
+      set_convector_fan_speed: ({ device, speed }) => device.triggerCapabilityListener('convector_fan_speed', speed),
+      set_convector_flap: ({ device, state }) => device.triggerCapabilityListener('convector_flap', state === 'open'),
+    };
+
+    for (const [id, listener] of Object.entries(actions)) {
+      this.homey.flow.getActionCard(id).registerRunListener(listener);
+    }
   }
 
   async onUninit() {

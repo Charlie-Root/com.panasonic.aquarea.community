@@ -64,7 +64,7 @@ class AquareaDriver extends Homey.Driver {
       const devices = await client.getDevices();
 
       if (!devices.length) {
-        throw new Error('Aucune pompe a chaleur Aquarea trouvee sur ce compte.');
+        throw new Error('Aucun appareil Comfort Cloud trouve sur ce compte.');
       }
 
       // Session (tokens + clientId + cookies) reutilisable par le device pour
@@ -73,6 +73,9 @@ class AquareaDriver extends Homey.Driver {
 
       return devices.map(d => ({
         name: d.name,
+        // Valeur affichee par defaut sur la vignette. L'utilisateur peut
+        // ensuite choisir une autre capability dans les reglages de Homey.
+        uiIndicator: 'measure_temperature',
         data: {
           id: d.id,
         },
@@ -82,6 +85,7 @@ class AquareaDriver extends Homey.Driver {
           username: credentials.username,
           password: credentials.password,
           session: savedSession,
+          deviceType: d.deviceType,
         },
         settings: {
           poll_interval: 300,

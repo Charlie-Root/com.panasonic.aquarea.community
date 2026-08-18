@@ -32,6 +32,21 @@ class AquareaConvectorDevice extends Homey.Device {
     this._client = null;
     this._pollTimer = null;
 
+    // Retire les anciennes capabilities d'alarme expérimentales des appareils
+    // déjà installés, sans recréer l'appareil ni affecter ses Flows.
+    for (const capability of ['alarm_generic', 'convector_alarm_codes']) {
+      if (this.hasCapability(capability)) {
+        try {
+          await this.removeCapability(capability);
+        } catch (err) {
+          // Une capability personnalisée retirée du manifeste peut encore être
+          // présente sur un ancien appareil. Homey répond alors 404 à sa
+          // suppression ; cela ne doit pas empêcher le device de démarrer.
+          this.error(`Unable to remove legacy capability ${capability}: ${err.message}`);
+        }
+      }
+    }
+
     await this._initClient();
     this._registerCapabilityListeners();
     await this._poll();

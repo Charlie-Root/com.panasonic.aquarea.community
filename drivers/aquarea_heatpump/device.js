@@ -48,8 +48,10 @@ class AquareaDevice extends Homey.Device {
   async onInit() {
     const { id } = this.getData();
     this.deviceId = id;
+    this.deviceType = String(this.getStoreValue('deviceType') || '2');
+    this._experimentalDiagnosticPending = this.deviceType !== '2';
 
-    this.log(`Aquarea device init: ${this.getName()} (${this.deviceId})`);
+    this.log(`Aquarea device init: ${this.getName()} (${this.deviceId}, Comfort Cloud type ${this.deviceType})`);
 
     // Instancie le client a partir des identifiants stockes au pairing.
     const username = this.getStoreValue('username');
@@ -98,6 +100,7 @@ class AquareaDevice extends Homey.Device {
     if (savedSession) this.client.importSession(savedSession);
 
     await this._syncCapabilities(this._layout);
+    await this._refreshUiIndicator();
 
     // Demarre le moteur de polling.
     this._startPolling();
@@ -109,6 +112,54 @@ class AquareaDevice extends Homey.Device {
   // =========================================================================
   //  Composition de la carte (capabilities)
   // =========================================================================
+
+  /**
+   * Tente de migrer l'indicateur de vignette sans recréer l'appareil. Selon la
+   * version de Homey, le setter peut être exposé directement ou via l'API
+   * Devices. Le rafraîchissement de classe sert de repli non destructif.
+   */
+  async _refreshUiIndicator() {
+    const migrationKey = 'ui_indicator_refresh_v1';
+    if (this.getStoreValue(migrationKey)) return;
+
+    const candidates = [
+      'measure_temperature',
+      'measure_water_temperature',
+      'measure_temperature.zone',
+      'measure_temperature.outdoor',
+    ];
+    const indicator = candidates.find(capability => this.hasCapability(capability));
+    if (!indicator) {
+      this.error('[UI indicator] Aucune capability de température disponible');
+      return;
+    }
+
+    try {
+      if (typeof this.setUiIndicator === 'function') {
+        await this.setUiIndicator(indicator);
+        this.log(`[UI indicator] Mis à jour via Device.setUiIndicator: ${indicator}`);
+      } else if (this.homey.api && this.homey.api.devices
+        && typeof this.homey.api.devices.updateDevice === 'function') {
+        await this.homey.api.devices.updateDevice({
+          id: typeof this.getId === 'function' ? this.getId() : this.deviceId,
+          device: { uiIndicator: indicator },
+        });
+        this.log(`[UI indicator] Mis à jour via Devices.updateDevice: ${indicator}`);
+      } else if (typeof this.setClass === 'function' && typeof this.getClass === 'function') {
+        // Force Homey à recalculer les métadonnées UI sans changer l'identité
+        // de l'appareil ni les références utilisées dans les Flows.
+        await this.setClass(this.getClass());
+        this.log(`[UI indicator] Métadonnées UI rafraîchies (indicateur demandé: ${indicator})`);
+      } else {
+        this.error('[UI indicator] Cette version de Homey ne fournit aucun mécanisme de migration');
+        return;
+      }
+
+      await this.setStoreValue(migrationKey, true);
+    } catch (err) {
+      this.error(`[UI indicator] Échec du rafraîchissement: ${err.message}`);
+    }
+  }
 
   /**
    * Determine quelle capability recoit quelle grandeur.
@@ -156,7 +207,7 @@ class AquareaDevice extends Homey.Device {
    */
   _desiredCapabilities(layout) {
     const { hasTank, hasBivalent } = layout;
-    const caps = ['thermostat_mode'];
+    const caps = [];
 
     if (layout.hasCooling) caps.push('cooling_mode');
     caps.push(layout.zoneSetpointCap);
@@ -170,7 +221,10 @@ class AquareaDevice extends Homey.Device {
 
     // Etats de fonctionnement remontes par le cloud (lecture seule).
     caps.push('operation_direction', 'special_status');
-    caps.push('quiet_mode', 'powerful_mode', 'defrost_active', 'force_heater');
+    // Homey Mobile ouvre par defaut le dernier controle de type "picker".
+    // thermostat_mode est donc place apres les autres pickers afin que le
+    // troisieme onglet s'ouvre sur "Mode de fonctionnement".
+    caps.push('quiet_mode', 'powerful_mode', 'thermostat_mode', 'defrost_active', 'force_heater');
     if (hasTank) caps.push('force_dhw', 'electric_anode');
     if (hasBivalent) caps.push('bivalent_active');
     caps.push('holiday_mode', 'measure_water_pressure', 'pump_running');
@@ -267,7 +321,12 @@ class AquareaDevice extends Homey.Device {
     this._polling = true;
 
     try {
-      const data = await this.client.getDeviceData(this.deviceId);
+      const diagnostic = this._experimentalDiagnosticPending;
+      const data = await this.client.getDeviceData(this.deviceId, {
+        diagnostic,
+        deviceType: this.deviceType,
+      });
+      if (diagnostic) this._experimentalDiagnosticPending = false;
 
       if (data.zoneId != null) this.zoneId = data.zoneId;
 
@@ -706,8 +765,8 @@ class AquareaDevice extends Homey.Device {
     // setMode() pilote aussi la zone et l'autorisation ECS : on aligne les
     // interrupteurs sur ce qui vient d'etre envoye (cf. AquareaClient.setMode).
     if (value !== 'off') {
-      await this._commit('onoff.zone', true);
-      if (value === 'heat_tank' || value === 'cool_tank') await this._commit('onoff.tank', true);
+      await this._commit('onoff.zone', value !== 'dhw');
+      if (value === 'heat_tank' || value === 'cool_tank' || value === 'dhw') await this._commit('onoff.tank', true);
       else if (value === 'heat' || value === 'cool') await this._commit('onoff.tank', false);
     }
     this._refreshSoon();
@@ -729,6 +788,10 @@ class AquareaDevice extends Homey.Device {
       const newMode = on ? 'cool_tank' : 'cool';
       await this.client.setMode(this.deviceId, newMode);
       await this._commit('thermostat_mode', newMode);
+    } else if (mode === 'dhw' && !on) {
+      await this.client.setMode(this.deviceId, 'off');
+      await this._commit('thermostat_mode', 'off');
+      await this._commit('onoff.zone', false);
     } else {
       await this.client.setTankOperation(this.deviceId, on);
     }

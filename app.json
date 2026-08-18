@@ -2172,6 +2172,7 @@
         "fr": "Pompe a chaleur Aquarea (Comfort Cloud)"
       },
       "class": "thermostat",
+      "uiIndicator": "measure_temperature",
       "capabilities": [
         "thermostat_mode",
         "cooling_mode",
@@ -2181,12 +2182,14 @@
         "onoff.zone",
         "measure_temperature",
         "measure_temperature.zone",
+        "measure_water_temperature",
         "measure_temperature.indoor",
         "measure_temperature.outdoor",
         "operation_direction",
         "special_status",
         "quiet_mode",
         "powerful_mode",
+        "thermostat_mode",
         "defrost_active",
         "force_heater",
         "force_dhw",
@@ -2287,6 +2290,13 @@
               "title": {
                 "en": "Heat + hot water",
                 "fr": "Chauffage + ECS"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "en": "Domestic hot water",
+                "fr": "ECS uniquement"
               }
             },
             {

@@ -73,9 +73,6 @@ class AquareaDriver extends Homey.Driver {
 
       return devices.map(d => ({
         name: d.name,
-        // Value shown by default on the device tile. The user can then pick
-        // another capability in the Homey settings.
-        uiIndicator: 'measure_temperature',
         data: {
           id: d.id,
         },

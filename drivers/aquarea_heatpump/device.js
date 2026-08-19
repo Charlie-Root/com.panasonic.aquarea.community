@@ -28,6 +28,11 @@ const FALLBACK_WATER_SETPOINT_RANGE = { min: 20, max: 60, step: 1 };
 const FALLBACK_WATER_COOL_RANGE = { min: 5, max: 25, step: 1 };
 const FALLBACK_TANK_RANGE = { min: 40, max: 65, step: 1 };
 
+// Device class used for the tile. Anything in `thermostat`, `light`, `lock` or
+// `speaker` prevents the user from choosing the status indicator themselves,
+// so the heat pump deliberately sits outside that set.
+const TARGET_DEVICE_CLASS = 'heater';
+
 // Controllable capabilities -> method handling the command.
 const COMMAND_HANDLERS = {
   'target_temperature': '_onSetTargetTemperature',
@@ -97,7 +102,7 @@ class AquareaDevice extends Homey.Device {
     if (savedSession) this.client.importSession(savedSession);
 
     await this._syncCapabilities(this._layout);
-    await this._refreshUiIndicator();
+    await this._migrateDeviceClass();
 
     // Start the polling engine.
     this._startPolling();
@@ -111,51 +116,26 @@ class AquareaDevice extends Homey.Device {
   // =========================================================================
 
   /**
-   * Tries to migrate the tile indicator without recreating the device.
-   * Depending on the Homey version, the setter may be exposed directly or
-   * through the Devices API. Refreshing the class is the non-destructive
-   * fallback.
+   * Moves already-paired devices off the `thermostat` class.
+   *
+   * Homey only applies the class from the manifest when a device is paired,
+   * so existing devices keep the class they were created with. The status
+   * indicator cannot be chosen by the user while the class is `thermostat`,
+   * `light`, `lock` or `speaker`, hence this one-off migration.
    */
-  async _refreshUiIndicator() {
-    const migrationKey = 'ui_indicator_refresh_v1';
+  async _migrateDeviceClass() {
+    const migrationKey = 'device_class_heater_v1';
     if (this.getStoreValue(migrationKey)) return;
 
-    const candidates = [
-      'measure_temperature',
-      'measure_water_temperature',
-      'measure_temperature.zone',
-      'measure_temperature.outdoor',
-    ];
-    const indicator = candidates.find(capability => this.hasCapability(capability));
-    if (!indicator) {
-      this.error('[UI indicator] Aucune capability de température disponible');
-      return;
-    }
-
     try {
-      if (typeof this.setUiIndicator === 'function') {
-        await this.setUiIndicator(indicator);
-        this.log(`[UI indicator] Mis à jour via Device.setUiIndicator: ${indicator}`);
-      } else if (this.homey.api && this.homey.api.devices
-        && typeof this.homey.api.devices.updateDevice === 'function') {
-        await this.homey.api.devices.updateDevice({
-          id: typeof this.getId === 'function' ? this.getId() : this.deviceId,
-          device: { uiIndicator: indicator },
-        });
-        this.log(`[UI indicator] Mis à jour via Devices.updateDevice: ${indicator}`);
-      } else if (typeof this.setClass === 'function' && typeof this.getClass === 'function') {
-        // Force Homey to recompute the UI metadata without changing the
-        // device identity or the references used in Flows.
-        await this.setClass(this.getClass());
-        this.log(`[UI indicator] Métadonnées UI rafraîchies (indicateur demandé: ${indicator})`);
-      } else {
-        this.error('[UI indicator] Cette version de Homey ne fournit aucun mécanisme de migration');
-        return;
+      const current = this.getClass();
+      if (current !== TARGET_DEVICE_CLASS) {
+        await this.setClass(TARGET_DEVICE_CLASS);
+        this.log(`Device class migrated: ${current} -> ${TARGET_DEVICE_CLASS}`);
       }
-
       await this.setStoreValue(migrationKey, true);
     } catch (err) {
-      this.error(`[UI indicator] Échec du rafraîchissement: ${err.message}`);
+      this.error('Device class migration failed:', err.message);
     }
   }
 

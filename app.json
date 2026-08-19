@@ -2437,8 +2437,7 @@
         "fr": "Pompe a chaleur Aquarea (Comfort Cloud)",
         "nl": "Aquarea-warmtepomp (Comfort Cloud)"
       },
-      "class": "thermostat",
-      "uiIndicator": "measure_temperature",
+      "class": "heater",
       "capabilities": [
         "thermostat_mode",
         "cooling_mode",

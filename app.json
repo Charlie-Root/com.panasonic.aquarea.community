@@ -2455,7 +2455,6 @@
         "special_status",
         "quiet_mode",
         "powerful_mode",
-        "thermostat_mode",
         "defrost_active",
         "force_heater",
         "force_dhw",

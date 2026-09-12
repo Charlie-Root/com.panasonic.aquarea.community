@@ -7,6 +7,11 @@ const AquareaHomeClient = require('../../lib/AquareaHomeClient');
 const DEFAULT_POLL_INTERVAL = 60;
 const MIN_POLL_INTERVAL     = 30;
 
+// Consecutive failed polls tolerated before the device is marked unavailable.
+// A single timeout or a dropped HTTP/2 connection is routine; three in a row
+// means the convector really is out of reach.
+const MAX_POLL_FAILURES = 3;
+
 // Mapping operationMode int -> thermostat_mode string
 const MODE_INT_TO_STR = { 0: 'auto', 1: 'heat', 2: 'cool' };
 const MODE_STR_TO_INT = { auto: 0, heat: 1, cool: 2 };
@@ -31,6 +36,7 @@ class AquareaConvectorDevice extends Homey.Device {
 
     this._client = null;
     this._pollTimer = null;
+    this._pollFailures = 0;
 
     // Removes the old experimental alarm capabilities from already installed
     // devices, without recreating the device or affecting its Flows.
@@ -140,6 +146,12 @@ class AquareaConvectorDevice extends Homey.Device {
       const mac    = this._getMacAddress();
       const status = await this._client.getDeviceStatus(mac);
 
+      // The call itself went through — which may have taken a transparent
+      // re-login — so the convector is reachable whatever the payload holds.
+      await this._persistSession();
+      this._pollFailures = 0;
+      if (!this.getAvailable()) await this.setAvailable();
+
       if (!status || Object.keys(status).length === 0) return;
 
       // onoff
@@ -181,11 +193,6 @@ class AquareaConvectorDevice extends Homey.Device {
       if (status.flap !== null && status.flap !== undefined) {
         await this.setCapabilityValue('convector_flap', !!status.flap).catch(() => {});
       }
-
-      // The poll may have gone through a transparent re-login.
-      await this._persistSession();
-
-      this.setAvailable();
     } catch (err) {
       this.error('Poll error:', err.message);
 
@@ -193,11 +200,19 @@ class AquareaConvectorDevice extends Homey.Device {
       // missing or refused, and polling again will not change that. Say so
       // straight away instead of leaving the device silently stale.
       if (AquareaHomeClient.isAuthFailure(err)) {
+        this._pollFailures = MAX_POLL_FAILURES;
         this.setUnavailable(this.homey.__('error.missing_credentials')).catch(() => {});
         return;
       }
 
-      this.setUnavailable(err.message).catch(() => {});
+      // Anything else is treated as a blip until it has happened often enough
+      // to be real: the convector used to drop out of Homey — breaking Flows
+      // and greying out its tiles — on a single network timeout.
+      this._pollFailures += 1;
+      if (this._pollFailures >= MAX_POLL_FAILURES) {
+        this.setUnavailable(this.homey.__('error.connection_failed', { message: err.message }))
+          .catch(() => {});
+      }
     }
   }
 

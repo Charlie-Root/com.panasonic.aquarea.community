@@ -41,7 +41,7 @@ No `onUninit()` (heat pump has one at `drivers/aquarea_heatpump/device.js:1057`)
 Also `onInit` awaits `_initClient()`, which can throw on a bad login, leaving the
 device half-initialised with no capability listeners registered.
 
-### BUG-3 · Convector flaps unavailable on any network blip `todo`
+### BUG-3 · Convector flaps unavailable on any network blip `done`
 `drivers/aquarea_convector/device.js:147` calls `setUnavailable(err.message)` on every
 poll error, including a transient timeout. The heat pump deliberately stays available
 except on persistent auth failure (`drivers/aquarea_heatpump/device.js:369-373`).

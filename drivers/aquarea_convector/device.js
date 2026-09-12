@@ -66,9 +66,39 @@ class AquareaConvectorDevice extends Homey.Device {
 
     if (store.session) {
       this._client.importSession(store.session);
-    } else {
+    }
+
+    // ⚠️  Devices paired before the credentials were persisted only have a
+    //     stored JWT. They keep working for as long as that token is accepted,
+    //     but nothing can revive them once it expires — so only complain when
+    //     there is no session left to try. The poller flags the moment the
+    //     token is actually refused (see _poll).
+    if (!store.email || !store.password) {
+      this.log('No stored credentials: re-authentication is impossible, re-pair the device');
+      if (!store.session) {
+        await this.setUnavailable(this.homey.__('error.missing_credentials'));
+      }
+      return;
+    }
+
+    if (!store.session) {
       await this._client.login();
     }
+  }
+
+  /**
+   * Persists the session after a re-login, so a Homey restart does not start
+   * from a token that is already known to be dead. Only written when the token
+   * actually changed: the store lives on flash.
+   */
+  async _persistSession() {
+    const session = this._client.exportSession();
+    if (!session || !session.token) return;
+    if (session.token === (this.getStoreValue('session') || {}).token) return;
+
+    await this.setStoreValue('session', session).catch(err => {
+      this.error('Unable to persist session:', err.message);
+    });
   }
 
   _getMacAddress() {
@@ -141,9 +171,21 @@ class AquareaConvectorDevice extends Homey.Device {
         await this.setCapabilityValue('convector_flap', !!status.flap).catch(() => {});
       }
 
+      // The poll may have gone through a transparent re-login.
+      await this._persistSession();
+
       this.setAvailable();
     } catch (err) {
       this.error('Poll error:', err.message);
+
+      // An authentication failure is terminal: the stored credentials are
+      // missing or refused, and polling again will not change that. Say so
+      // straight away instead of leaving the device silently stale.
+      if (AquareaHomeClient.isAuthFailure(err)) {
+        this.setUnavailable(this.homey.__('error.missing_credentials')).catch(() => {});
+        return;
+      }
+
       this.setUnavailable(err.message).catch(() => {});
     }
   }

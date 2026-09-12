@@ -9,7 +9,7 @@ Status: `todo` / `wip` / `done` / `wontfix`
 
 ## P0 — live user-facing breakage
 
-### BUG-1 · Convector can never re-authenticate `todo`
+### BUG-1 · Convector can never re-authenticate `done`
 `drivers/aquarea_convector/driver.js:63-67` stores only `macAddress` + `session`.
 `drivers/aquarea_convector/device.js:61-62` reads `store.email` / `store.password`
 — both `undefined`. Once the JWT expires, `login()` can never succeed.

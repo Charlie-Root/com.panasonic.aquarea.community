@@ -17,7 +17,10 @@ class AquareaConvectorDriver extends Homey.Driver {
   }
 
   onPair(session) {
+    // Credentials entered during this pairing session + authenticated client.
+    let credentials = { email: null, password: null };
     let client = null;
+
     session.setHandler('login', async data => {
       const email    = (data.username || '').trim();
       const password = data.password || '';
@@ -41,10 +44,12 @@ class AquareaConvectorDriver extends Homey.Driver {
         return false;
       }
 
+      credentials = { email, password };
       return true;
     });
+
     session.setHandler('list_devices', async () => {
-      if (!client) {
+      if (!credentials.email || !client) {
         throw new Error('Session de pairing invalide : reconnectez-vous.');
       }
 
@@ -63,6 +68,10 @@ class AquareaConvectorDriver extends Homey.Driver {
         },
         store: {
           macAddress: d.macAddress,
+          // The e-mail/password pair must be kept: the JWT expires and the
+          // only way back is a fresh login. Homey encrypts the store at rest.
+          email:      credentials.email,
+          password:   credentials.password,
           session:    savedSession,
         },
         settings: {

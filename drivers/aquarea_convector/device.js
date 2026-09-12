@@ -47,7 +47,18 @@ class AquareaConvectorDevice extends Homey.Device {
       }
     }
 
-    await this._initClient();
+    // ⚠️  A failing login must not abort onInit: Homey would then leave the
+    //     device without a single capability listener, and every tile press
+    //     would fail for as long as the app runs. Report the problem and carry
+    //     on — the poller recovers on its own once the API answers again.
+    try {
+      await this._initClient();
+    } catch (err) {
+      this.error('Client init failed:', err.message);
+      await this.setUnavailable(this.homey.__('error.connection_failed', { message: err.message }))
+        .catch(() => {});
+    }
+
     this._registerCapabilityListeners();
     await this._poll();
     this._startPolling();
@@ -195,24 +206,32 @@ class AquareaConvectorDevice extends Homey.Device {
   _registerCapabilityListeners() {
     const mac = this._getMacAddress();
 
+    // The listeners are registered even when the initial login failed, so a
+    // tile press must surface a readable error instead of "cannot read
+    // setPower of null".
+    const client = () => {
+      if (!this._client) throw new Error(this.homey.__('error.missing_credentials'));
+      return this._client;
+    };
+
     this.registerCapabilityListener('onoff', async value => {
-      await this._client.setPower(mac, value);
+      await client().setPower(mac, value);
     });
 
     this.registerCapabilityListener('target_temperature', async value => {
-      await this._client.setTemperature(mac, value);
+      await client().setTemperature(mac, value);
     });
 
     this.registerCapabilityListener('thermostat_mode', async value => {
-      await this._client.setOperationMode(mac, value);
+      await client().setOperationMode(mac, value);
     });
 
     this.registerCapabilityListener('convector_fan_speed', async value => {
-      await this._client.setFanSpeed(mac, value);
+      await client().setFanSpeed(mac, value);
     });
 
     this.registerCapabilityListener('convector_flap', async value => {
-      await this._client.setFlap(mac, value);
+      await client().setFlap(mac, value);
     });
   }
 
@@ -227,6 +246,12 @@ class AquareaConvectorDevice extends Homey.Device {
   async onDeleted() {
     this._stopPolling();
     this.log('AquareaConvectorDevice deleted:', this.getName());
+  }
+
+  // Without this the interval survives an app restart or a device reload and
+  // keeps polling on behalf of a device instance that no longer exists.
+  async onUninit() {
+    this._stopPolling();
   }
 
 }

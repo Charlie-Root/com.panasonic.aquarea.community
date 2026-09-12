@@ -36,7 +36,7 @@ already used correctly in `_updateInfoSettings`.
 
 ## P1 — correctness and robustness
 
-### BUG-2 · Convector leaks its poll timer `todo`
+### BUG-2 · Convector leaks its poll timer `done`
 No `onUninit()` (heat pump has one at `drivers/aquarea_heatpump/device.js:1057`).
 Also `onInit` awaits `_initClient()`, which can throw on a bad login, leaving the
 device half-initialised with no capability listeners registered.

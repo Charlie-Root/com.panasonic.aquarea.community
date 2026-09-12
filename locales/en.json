@@ -27,5 +27,19 @@
     "comfort_heat": "Comfort heat",
     "comfort_cool": "Comfort cool",
     "sensor_unknown": "Unknown"
+  },
+  "capability": {
+    "zone_curve_offset": "Zone curve offset",
+    "zone_cooling_curve_offset": "Zone cooling curve offset",
+    "zone_water_setpoint": "Zone water setpoint",
+    "zone_cooling_setpoint": "Zone cooling setpoint",
+    "tank_setpoint": "Tank setpoint",
+    "room_temperature": "Room temperature",
+    "heat_energy_today": "Heat energy today",
+    "cool_energy_today": "Cool energy today",
+    "tank_energy_today": "Tank energy today",
+    "heat_cost_today": "Heat cost today",
+    "cool_cost_today": "Cool cost today",
+    "tank_cost_today": "Tank cost today"
   }
 }

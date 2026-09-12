@@ -23,7 +23,7 @@ status `16` (UNAUTHENTICATED) to `login()` + one retry.
 **Note:** existing paired convectors have no credentials in their store — needs a
 repair flow (see FEAT-2) or a clear "re-pair once" changelog entry.
 
-### BUG-5 · Dutch translation erased at runtime `todo`
+### BUG-5 · Dutch translation erased at runtime `done`
 `_applyRanges` hardcodes `{ en, fr }` only — `drivers/aquarea_heatpump/device.js:525-531`
 (zone label) and every `meter_power.*` / `measure_cost.*` title at `:565-620`.
 `app.json` has proper `nl` strings, but these `setCapabilityOptions` calls overwrite

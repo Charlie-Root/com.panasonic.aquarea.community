@@ -27,5 +27,19 @@
     "comfort_heat": "Confort chaud",
     "comfort_cool": "Confort froid",
     "sensor_unknown": "Inconnu"
+  },
+  "capability": {
+    "zone_curve_offset": "Décalage loi d'eau zone",
+    "zone_cooling_curve_offset": "Décalage loi d'eau froid zone",
+    "zone_water_setpoint": "Consigne d'eau zone",
+    "zone_cooling_setpoint": "Consigne froid zone",
+    "tank_setpoint": "Consigne ballon",
+    "room_temperature": "Température ambiante",
+    "heat_energy_today": "Énergie chauffage aujourd'hui",
+    "cool_energy_today": "Énergie rafraîchissement aujourd'hui",
+    "tank_energy_today": "Énergie ballon aujourd'hui",
+    "heat_cost_today": "Coût chauffage aujourd'hui",
+    "cool_cost_today": "Coût rafraîchissement aujourd'hui",
+    "tank_cost_today": "Coût ballon aujourd'hui"
   }
 }

@@ -519,18 +519,24 @@ class AquareaDevice extends Homey.Device {
     const layout = this._layout;
     const cooling = this._cooling;
 
+    // ⚠️  Titles MUST come from the locale files, never from an inline
+    //     { en, fr } object: setCapabilityOptions replaces the whole title, so
+    //     an inline object silently erases the other languages declared in
+    //     app.json (a Dutch user then reads English on the main tiles).
+    //     this.homey.__() resolves to the Homey language; setCapabilityOptions
+    //     accepts that plain string, same as _updateInfoSettings does.
+    const t = key => this.homey.__(`capability.${key}`);
+
     // A heating curve offset is expressed in kelvin, not in absolute degrees.
     let zoneLabel;
     if (layout.zoneIsOffset) {
-      zoneLabel = cooling
-        ? { en: 'Zone cooling curve offset', fr: "Decalage loi d'eau froid zone" }
-        : { en: 'Zone curve offset', fr: "Decalage loi d'eau zone" };
+      zoneLabel = t(cooling ? 'zone_cooling_curve_offset' : 'zone_curve_offset');
     } else {
-      zoneLabel = cooling
-        ? { en: 'Zone cooling setpoint', fr: 'Consigne froid zone' }
-        : { en: 'Zone water setpoint', fr: "Consigne d'eau zone" };
+      zoneLabel = t(cooling ? 'zone_cooling_setpoint' : 'zone_water_setpoint');
     }
-    const zoneUnits = layout.zoneIsOffset ? { en: 'K', fr: 'K' } : { en: '°C', fr: '°C' };
+    // Unit symbols are identical in every supported language: a plain string
+    // keeps them out of the locale files without erasing any translation.
+    const zoneUnits = layout.zoneIsOffset ? 'K' : '°C';
 
     // ⚠️  If the API reports no range, min/max MUST still be sent: otherwise
     //     the manifest bounds (40-65 °C, meant for the tank) stay in place on a
@@ -562,48 +568,48 @@ class AquareaDevice extends Homey.Device {
     }
     if (layout.tankSetpointCap && this.hasCapability(layout.tankSetpointCap)) {
       jobs.push(this.setCapabilityOptions(layout.tankSetpointCap, Object.assign({
-        title: { en: 'Tank setpoint', fr: 'Consigne ballon' },
-        units: { en: '°C', fr: '°C' },
+        title: t('tank_setpoint'),
+        units: '°C',
       }, tankRange)));
     }
     // Without a tank, `measure_temperature` carries the zone: the label
     // inherited from the manifest ("Tank temperature") must be corrected.
     if (!layout.hasTank && layout.zoneTempCap === 'measure_temperature') {
       jobs.push(this.setCapabilityOptions('measure_temperature', {
-        title: { en: 'Room temperature', fr: 'Temperature ambiante' },
+        title: t('room_temperature'),
       }));
     }
     if (this.hasCapability('meter_power.heat')) {
       jobs.push(this.setCapabilityOptions('meter_power.heat', {
-        title: { en: 'Heat energy today', fr: "Energie chauffage aujourd'hui" },
+        title: t('heat_energy_today'),
       }));
     }
     if (this.hasCapability('meter_power.cool')) {
       jobs.push(this.setCapabilityOptions('meter_power.cool', {
-        title: { en: 'Cool energy today', fr: "Energie climatisation aujourd'hui" },
+        title: t('cool_energy_today'),
       }));
     }
     if (this.hasCapability('meter_power.tank')) {
       jobs.push(this.setCapabilityOptions('meter_power.tank', {
-        title: { en: 'Tank energy today', fr: "Energie ballon aujourd'hui" },
+        title: t('tank_energy_today'),
       }));
     }
     if (this.hasCapability('measure_cost.heat')) {
       jobs.push(this.setCapabilityOptions('measure_cost.heat', {
         icon: '/assets/capabilities/cost.svg',
-        title: { en: 'Heat cost today', fr: "Cout chauffage aujourd'hui" },
+        title: t('heat_cost_today'),
       }));
     }
     if (this.hasCapability('measure_cost.cool')) {
       jobs.push(this.setCapabilityOptions('measure_cost.cool', {
         icon: '/assets/capabilities/cost.svg',
-        title: { en: 'Cool cost today', fr: "Cout climatisation aujourd'hui" },
+        title: t('cool_cost_today'),
       }));
     }
     if (this.hasCapability('measure_cost.tank')) {
       jobs.push(this.setCapabilityOptions('measure_cost.tank', {
         icon: '/assets/capabilities/cost.svg',
-        title: { en: 'Tank cost today', fr: "Cout ballon aujourd'hui" },
+        title: t('tank_cost_today'),
       }));
     }
 

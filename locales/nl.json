@@ -27,5 +27,19 @@
     "comfort_heat": "Comfort verwarmen",
     "comfort_cool": "Comfort koelen",
     "sensor_unknown": "Onbekend"
+  },
+  "capability": {
+    "zone_curve_offset": "Verschuiving stooklijn zone",
+    "zone_cooling_curve_offset": "Verschuiving koelcurve zone",
+    "zone_water_setpoint": "Waterinstelpunt zone",
+    "zone_cooling_setpoint": "Koelinstelpunt zone",
+    "tank_setpoint": "Instelpunt boiler",
+    "room_temperature": "Kamertemperatuur",
+    "heat_energy_today": "Energie verwarmen vandaag",
+    "cool_energy_today": "Energie koelen vandaag",
+    "tank_energy_today": "Energie boiler vandaag",
+    "heat_cost_today": "Kosten verwarmen vandaag",
+    "cool_cost_today": "Kosten koelen vandaag",
+    "tank_cost_today": "Kosten boiler vandaag"
   }
 }

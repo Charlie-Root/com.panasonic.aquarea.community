@@ -76,7 +76,7 @@ if Homey ever picks it up for the Energy tab.
 **Fix:** daily figure on a custom capability; add a genuinely cumulative `meter_power`
 accumulated app-side. Breaking change to existing Insights data — needs a migration plan.
 
-### BUG-8 · Small stuff `todo`
+### BUG-8 · Small stuff `done`
 - `setStoreValue('session', …)` runs every poll (`drivers/aquarea_heatpump/device.js:365`)
   — ~288 disk writes/day/device. Only write when `exportSession()` actually changed.
 - `AquareaClient.setMode()` (`lib/AquareaClient.js:961`) and `setTargetTemperature()`

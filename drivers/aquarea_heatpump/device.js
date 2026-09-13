@@ -324,6 +324,11 @@ class AquareaDevice extends Homey.Device {
       });
       if (diagnostic) this._experimentalDiagnosticPending = false;
 
+      // Kept so a command can reuse it instead of paying for its own
+      // getDeviceData() round-trip (see _cachedDeviceData()).
+      this._lastData = data;
+      this._lastDataAt = Date.now();
+
       if (data.zoneId != null) this.zoneId = data.zoneId;
 
       // Ids of every zone: the Flow cards can target a secondary zone, which
@@ -380,7 +385,7 @@ class AquareaDevice extends Homey.Device {
       await this._pollConsumption();
 
       // Persist the refreshed session so it survives restarts.
-      await this.setStoreValue('session', this.client.exportSession());
+      await this._persistSession();
 
       if (!this.getAvailable()) await this.setAvailable();
     } catch (err) {
@@ -395,6 +400,41 @@ class AquareaDevice extends Homey.Device {
     } finally {
       this._polling = false;
     }
+  }
+
+  /**
+   * Persists the client session, but only when it actually changed.
+   *
+   * ⚠️  The poller runs every 5 minutes: writing the store on each pass is
+   *     ~288 flash writes a day per device, for a payload that only changes
+   *     when a token is renewed (roughly hourly).
+   */
+  async _persistSession() {
+    const session = this.client.exportSession();
+    if (!session || !session.accessToken) return;
+
+    const stored = this.getStoreValue('session') || {};
+    if (session.accessToken === stored.accessToken
+      && session.refreshToken === stored.refreshToken
+      && session.clientId === stored.clientId) return;
+
+    await this.setStoreValue('session', session).catch(err => {
+      this.error('Unable to persist session:', err.message);
+    });
+  }
+
+  /**
+   * Last poll payload, when it is recent enough to stand in for a fresh
+   * fetch. Commands only read structural fields from it (tank presence, zone
+   * id), so anything no older than one poll cycle is exactly what a fetch
+   * would have returned anyway — and it saves a call on an API this app is
+   * deliberately rate-limit-shy about. Returns undefined when stale or absent,
+   * which makes the client fetch the state itself.
+   */
+  _cachedDeviceData() {
+    if (!this._lastData) return undefined;
+    if (Date.now() - this._lastDataAt > this._resolveInterval()) return undefined;
+    return this._lastData;
   }
 
   async _pollConsumption() {
@@ -757,7 +797,7 @@ class AquareaDevice extends Homey.Device {
 
   async _onCapabilityThermostatMode(value) {
     this.log(`Command: thermostat_mode -> ${value}`);
-    await this.client.setMode(this.deviceId, value);
+    await this.client.setMode(this.deviceId, value, this._cachedDeviceData());
     await this._commit('thermostat_mode', value);
 
     // The heat/cool switch is a view of the mode: it must follow, and so must
@@ -789,14 +829,14 @@ class AquareaDevice extends Homey.Device {
     const mode = this.getCapabilityValue('thermostat_mode');
     if (mode === 'heat' || mode === 'heat_tank') {
       const newMode = on ? 'heat_tank' : 'heat';
-      await this.client.setMode(this.deviceId, newMode);
+      await this.client.setMode(this.deviceId, newMode, this._cachedDeviceData());
       await this._commit('thermostat_mode', newMode);
     } else if (mode === 'cool' || mode === 'cool_tank') {
       const newMode = on ? 'cool_tank' : 'cool';
-      await this.client.setMode(this.deviceId, newMode);
+      await this.client.setMode(this.deviceId, newMode, this._cachedDeviceData());
       await this._commit('thermostat_mode', newMode);
     } else if (mode === 'dhw' && !on) {
-      await this.client.setMode(this.deviceId, 'off');
+      await this.client.setMode(this.deviceId, 'off', this._cachedDeviceData());
       await this._commit('thermostat_mode', 'off');
       await this._commit('onoff.zone', false);
     } else {
@@ -866,7 +906,7 @@ class AquareaDevice extends Homey.Device {
       : (tankOn ? 'heat_tank' : 'heat');
 
     this.log(`Command: cooling_mode -> ${cooling} (mode ${mode})`);
-    await this.client.setMode(this.deviceId, mode);
+    await this.client.setMode(this.deviceId, mode, this._cachedDeviceData());
 
     // The direction changes right away: without this, a setpoint set just
     // after the switch would still go to the old direction's field.

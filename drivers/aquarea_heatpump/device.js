@@ -368,7 +368,10 @@ class AquareaDevice extends Homey.Device {
     } catch (err) {
       this.error('Polling error:', err.message);
       // Keep the device available except on a persistent auth error.
-      if (/identifiants|invalid|2FA|authorization code|access token/i.test(err.message)) {
+      // ⚠️  Detected on the structured `authFailed` flag AquareaClient sets at
+      //     the credential / 2FA / missing-token throw sites, never on the
+      //     message text: the wording is localised and changes upstream.
+      if (AquareaClient.isAuthFailure(err)) {
         await this.setUnavailable(this.homey.__('error.connection_failed', { message: err.message }));
       }
     } finally {

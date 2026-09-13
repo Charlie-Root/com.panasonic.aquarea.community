@@ -48,7 +48,7 @@ except on persistent auth failure (`drivers/aquarea_heatpump/device.js:369-373`)
 
 **Fix:** one shared policy — N consecutive failures before going unavailable.
 
-### BUG-4 · Auth detection by regex over a partly-French message `todo`
+### BUG-4 · Auth detection by regex over a partly-French message `done`
 `drivers/aquarea_heatpump/device.js:371` does
 `/identifiants|invalid|2FA|authorization code|access token/i.test(err.message)`.
 `AquareaError` already carries `.code` — use it.

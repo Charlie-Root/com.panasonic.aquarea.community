@@ -157,3 +157,54 @@ speed and the UI bounces back on the next 60 s poll. Reuse `_commit` / `_refresh
 Also: every poll opens a fresh HTTP/2 connection (`lib/AquareaHomeClient.js:352`, `:378`)
 at a 60 s default with a 30 s floor, far more aggressive than the heat pump's 300 s.
 Reuse the session, or raise the floor.
+
+---
+
+## Follow-ups from the fix run (branch `backlog-fixes`, 2026-09-13)
+
+### REL-1 · Verify the repair view on real hardware `todo` **(release blocker)**
+`login_credentials` under `repair` could not be tested — no Homey, no credentials.
+Two runtime behaviours to confirm with one manual repair each:
+
+1. **Does a thrown `Error` in the repair `login` handler surface its message?**
+   Under `pair` it does. If `repair` instead coerces every failure into the
+   template's generic "invalid credentials", then `error.device_not_in_account`,
+   `error.invalid_credentials` and `error.credentials_required` all collapse into
+   the same text. Test with a wrong password, then with a **valid password for a
+   different Panasonic account**.
+   - Failing safely either way: nothing is written to the store, so working
+     credentials are never damaged. Only the *explanation* is lost.
+   - **Contingency if messages are swallowed:** keep the boolean return on the
+     credentials step and move the ownership check into a second view with its
+     own handler, where a thrown error is rendered.
+2. **Does `navigation: {next: "done"}` auto-advance?** If not, the dialog may sit
+   on the credentials view after a successful repair. Cosmetic — the store write
+   and device restart already happened — but it reads as a failure. Fix is
+   `await session.done()` after `onCredentialsRepaired()`.
+
+Also worth one smoke test: heat-pump `onInit` was restructured so device state is
+built *before* the credentials guard (the old early return left a device with no
+listeners, no timer and no `_layout`, which repair could not revive). That is on
+the startup path of *every* heat-pump device. If anything on this branch
+misbehaves, look there first.
+
+### REL-2 · French accents are now mixed `todo`
+`locales/fr.json` has 11 properly accented keys against 4 unaccented legacy ones:
+`info.setpoint_absolute`, `info.setpoint_offset`, `info.sensor_water`,
+`capability.zone_water_setpoint`. `app.json`'s French is uniformly unaccented too.
+Pick a direction and sweep — mixed is worse than either. Accented is correct French.
+
+### REL-3 · Misattributed hunk in `80142fb` `todo` (cosmetic)
+A 7-line BUG-4 change to `lib/AquareaClient.js` (flagging an app-level token error
+that survived the re-auth retry as `authFailed`) landed inside the BUG-6 commit,
+because two agents ran against the tree concurrently and one amended after HEAD had
+advanced. Code is correct and present; only the attribution is wrong. Safe to split
+now that no agent is writing.
+
+### REL-4 · `getDevices()` failure during repair is safe but indistinguishable `todo` (minor)
+`await client.getDevices()` in both repair handlers sits outside any try/catch. A
+429 or 5xx between a successful login and the ownership check rejects the repair
+with the raw client message. The store is untouched (all writes come after the
+check), so there is no silent damage — but if REL-1.1 resolves badly, a transient
+cloud error and a wrong-account rejection look identical to the user. Consider
+catching it and mapping to a distinct "could not verify, try again" message.

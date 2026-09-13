@@ -6,7 +6,13 @@
     "unknown_zone": "Zone {{zone}} bestaat niet op deze warmtepomp.",
     "no_current_setpoint": "Het huidige instelpunt is nog niet bekend; wacht op de volgende update.",
     "relative_main_zone_only": "Een relatieve wijziging is alleen mogelijk op de hoofdzone.",
-    "no_cooling": "Deze warmtepomp ondersteunt geen koeling."
+    "no_cooling": "Deze warmtepomp ondersteunt geen koeling.",
+    "credentials_required": "E-mailadres en wachtwoord zijn verplicht.",
+    "invalid_credentials": "Inloggen geweigerd: controleer het e-mailadres en het wachtwoord.",
+    "device_not_in_account": "Dit account bevat dit apparaat niet. Log in met het account waarmee het apparaat is gekoppeld.",
+    "pair_session_invalid": "De koppelsessie is niet meer geldig: log opnieuw in.",
+    "no_devices_found": "Geen Comfort Cloud-apparaat gevonden op dit account.",
+    "no_convectors_found": "Geen Aquarea Home-convector gevonden op dit account."
   },
   "info": {
     "yes": "Ja",

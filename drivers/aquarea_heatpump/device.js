@@ -56,15 +56,6 @@ class AquareaDevice extends Homey.Device {
 
     this.log(`Aquarea device init: ${this.getName()} (${this.deviceId}, Comfort Cloud type ${this.deviceType})`);
 
-    // Instantiate the client from the credentials stored at pairing time.
-    const username = this.getStoreValue('username');
-    const password = this.getStoreValue('password');
-
-    if (!username || !password) {
-      this.setUnavailable(this.homey.__('error.missing_credentials'));
-      return;
-    }
-
     // Active zone (updated on every poll). Default: 1.
     this.zoneId = 1;
 
@@ -87,11 +78,28 @@ class AquareaDevice extends Homey.Device {
     this._layout = this.getStoreValue('layout')
       || this._computeLayout({ hasTank: true, zoneSensorIsWater: false, zoneIsCurveOffset: false });
 
+    // ⚠️  Without credentials there is nothing to talk to the cloud with, so
+    //     the engine cannot start. Everything above is set up anyway: the
+    //     device must be ready for onCredentialsRepaired() to start it
+    //     (driver repair flow) without a Homey restart.
+    if (!this.getStoreValue('username') || !this.getStoreValue('password')) {
+      await this.setUnavailable(this.homey.__('error.missing_credentials'));
+      return;
+    }
+
+    await this._startEngine();
+  }
+
+  /**
+   * Builds the client from the stored credentials and starts polling.
+   * Split out of onInit() so the repair flow can re-run it in place.
+   */
+  async _startEngine({ awaitFirstPoll = false } = {}) {
     // The client must exist before _syncCapabilities(): that one registers the
     // command listeners, which can be triggered immediately.
     this.client = new AquareaClient({
-      username,
-      password,
+      username: this.getStoreValue('username'),
+      password: this.getStoreValue('password'),
       log: (...a) => this.log(...a),
       error: (...a) => this.error(...a),
     });
@@ -101,6 +109,9 @@ class AquareaDevice extends Homey.Device {
     const savedSession = this.getStoreValue('session');
     if (savedSession) this.client.importSession(savedSession);
 
+    // Any cached payload was fetched by the previous client.
+    this._lastData = null;
+
     await this._syncCapabilities(this._layout);
     await this._migrateDeviceClass();
 
@@ -108,7 +119,20 @@ class AquareaDevice extends Homey.Device {
     this._startPolling();
 
     // First refresh, immediate (but guarded).
-    this._poll().catch(err => this.error('Initial poll failed:', err.message));
+    const firstPoll = this._poll().catch(err => this.error('Initial poll failed:', err.message));
+    if (awaitFirstPoll) await firstPoll;
+  }
+
+  /**
+   * Called by the driver once a repair has written verified credentials and a
+   * fresh session to the store. Rebuilds the client around them and polls at
+   * once, so the user sees the device come back instead of waiting for the
+   * next app restart. _poll() is what marks it available again — a repair on
+   * the wrong account must not look like a success.
+   */
+  async onCredentialsRepaired() {
+    this.log('Credentials repaired: restarting with the new session');
+    await this._startEngine({ awaitFirstPoll: true });
   }
 
   // =========================================================================

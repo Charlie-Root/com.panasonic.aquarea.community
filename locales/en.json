@@ -6,7 +6,13 @@
     "unknown_zone": "Zone {{zone}} does not exist on this heat pump.",
     "no_current_setpoint": "The current setpoint is not known yet; wait for the next update.",
     "relative_main_zone_only": "A relative change is only possible on the main zone.",
-    "no_cooling": "This heat pump does not support cooling."
+    "no_cooling": "This heat pump does not support cooling.",
+    "credentials_required": "E-mail address and password are required.",
+    "invalid_credentials": "Login refused: check the e-mail address and the password.",
+    "device_not_in_account": "This account does not contain this device. Log in with the account the device was paired with.",
+    "pair_session_invalid": "The pairing session is no longer valid: please log in again.",
+    "no_devices_found": "No Comfort Cloud device was found on this account.",
+    "no_convectors_found": "No Aquarea Home convector was found on this account."
   },
   "info": {
     "yes": "Yes",

@@ -136,7 +136,7 @@ zones for lack of a reference value (`drivers/aquarea_heatpump/device.js:938-941
 
 **Fix:** zone-2 capabilities when `zoneCount > 1`, or pair each zone as its own device.
 
-### FEAT-2 · `onRepair` flow `todo`
+### FEAT-2 · `onRepair` flow `done`
 A changed password currently means delete + re-pair, losing all Insights history.
 ~30 lines. Also the migration path for BUG-1.
 

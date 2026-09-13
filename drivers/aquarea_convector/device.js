@@ -118,6 +118,33 @@ class AquareaConvectorDevice extends Homey.Device {
     });
   }
 
+  /**
+   * Called by the driver once a repair has written verified credentials and a
+   * fresh session to the store. Rebuilds the client around them and polls at
+   * once — for a convector paired before the credentials were persisted this
+   * is the moment it stops being a dead tile, so it must not wait for the next
+   * app restart.
+   */
+  async onCredentialsRepaired() {
+    this.log('Credentials repaired: reconnecting with the new session');
+    this._stopPolling();
+
+    await this._initClient();
+
+    // The failure budget belongs to the old credentials: a device parked at
+    // MAX_POLL_FAILURES by a terminal auth error would otherwise stay
+    // unavailable even though the very next poll succeeds.
+    this._pollFailures = 0;
+
+    // ⚠️  _poll() is the only thing allowed to decide availability here: it
+    //     calls setAvailable() when the call goes through and setUnavailable()
+    //     when the credentials are still refused. Flipping the device back to
+    //     available from here would paper over a repair on the wrong account.
+    await this._poll();
+
+    this._startPolling();
+  }
+
   _getMacAddress() {
     return this.getStore().macAddress || this.getData().id;
   }

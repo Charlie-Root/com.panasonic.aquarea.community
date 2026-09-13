@@ -57,7 +57,7 @@ Related: thrown messages mix French and English (`lib/AquareaClient.js:395`, `:4
 `:589`) and surface in `setUnavailable()`, so an EN/NL user sees
 "identifiants invalides ou 2FA ?" in the UI.
 
-### BUG-6 · `_syncCapabilities` wipes Insights history `todo`
+### BUG-6 · `_syncCapabilities` wipes Insights history `done`
 `drivers/aquarea_heatpump/device.js:213-242` removes and re-adds *every* capability
 whenever the desired list or order differs. Any future tweak to
 `_desiredCapabilities` ships as a release that silently destroys all users'

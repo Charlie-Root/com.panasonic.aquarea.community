@@ -217,33 +217,51 @@ class AquareaDevice extends Homey.Device {
   /**
    * Aligns the device capabilities with `_desiredCapabilities()`.
    *
-   * Homey freezes the capability order at the moment they are added: changing
-   * the order means removing then re-adding them. We only do it when the actual
-   * list really differs, because the operation clears the values (they are
-   * repopulated on the next poll).
+   * ⚠️  Only the genuine difference is applied: what is no longer wanted is
+   *     removed, what is new is added. Removing a capability destroys its
+   *     Insights history and breaks the Flow cards referring to it, so we
+   *     never touch a capability that is wanted and already present.
+   *
+   * The price is tile order: Homey freezes the order at the moment a
+   * capability is added, so a capability added later to an existing device
+   * lands at the end of the card instead of at its place in
+   * `_desiredCapabilities()`. That cosmetic drift is deliberately accepted —
+   * re-adding every capability just to sort the tiles would trade all of the
+   * user's historical data for it.
    */
   async _syncCapabilities(layout) {
     const desired = this._desiredCapabilities(layout);
     const current = this.getCapabilities();
 
-    const identical = current.length === desired.length
-      && desired.every((cap, i) => current[i] === cap);
-    if (identical) {
+    const toRemove = current.filter(cap => !desired.includes(cap));
+    const toAdd = desired.filter(cap => !current.includes(cap));
+
+    if (!toRemove.length && !toAdd.length) {
       this._registerCommandListeners();
       return;
     }
 
-    this.log('Rebuilding capabilities: '
-      + `tank=${layout.hasTank} bivalent=${layout.hasBivalent} `
+    this.log('Updating capabilities: '
+      + `+[${toAdd.join(', ')}] -[${toRemove.join(', ')}] `
+      + `(tank=${layout.hasTank} bivalent=${layout.hasBivalent} `
       + `zoneSensor=${layout.zoneIsWater ? 'water' : 'room'} `
-      + `zoneSetpoint=${layout.zoneIsOffset ? 'curve offset' : 'absolute'}`);
-    this._listeners.clear();
+      + `zoneSetpoint=${layout.zoneIsOffset ? 'curve offset' : 'absolute'})`);
+
+    // The capability set changed, so the options applied by _applyRanges() no
+    // longer necessarily cover every capability present: force a re-apply.
     this._rangesSignature = null;
 
-    for (const cap of current) {
-      try { await this.removeCapability(cap); } catch (err) { this.error(`removeCapability(${cap})`, err.message); }
+    for (const cap of toRemove) {
+      try {
+        await this.removeCapability(cap);
+        // A capability that comes back later must get its listener registered
+        // again, so it may not stay marked as already-registered.
+        this._listeners.delete(cap);
+      } catch (err) {
+        this.error(`removeCapability(${cap})`, err.message);
+      }
     }
-    for (const cap of desired) {
+    for (const cap of toAdd) {
       try { await this.addCapability(cap); } catch (err) { this.error(`addCapability(${cap})`, err.message); }
     }
 

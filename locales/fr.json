@@ -6,7 +6,13 @@
     "unknown_zone": "La zone {{zone}} n'existe pas sur cette pompe a chaleur.",
     "no_current_setpoint": "La consigne actuelle n'est pas encore connue ; attendez la prochaine mise a jour.",
     "relative_main_zone_only": "Une variation relative n'est possible que sur la zone principale.",
-    "no_cooling": "Cette pompe a chaleur ne gere pas le rafraichissement."
+    "no_cooling": "Cette pompe a chaleur ne gere pas le rafraichissement.",
+    "credentials_required": "L'adresse e-mail et le mot de passe sont requis.",
+    "invalid_credentials": "Connexion refusée : vérifiez l'adresse e-mail et le mot de passe.",
+    "device_not_in_account": "Ce compte ne contient pas cet appareil. Connectez-vous avec le compte utilisé lors de l'appairage.",
+    "pair_session_invalid": "La session d'appairage n'est plus valide : reconnectez-vous.",
+    "no_devices_found": "Aucun appareil Comfort Cloud trouvé sur ce compte.",
+    "no_convectors_found": "Aucun convecteur Aquarea Home trouvé sur ce compte."
   },
   "info": {
     "yes": "Oui",
@@ -27,5 +33,19 @@
     "comfort_heat": "Confort chaud",
     "comfort_cool": "Confort froid",
     "sensor_unknown": "Inconnu"
+  },
+  "capability": {
+    "zone_curve_offset": "Décalage loi d'eau zone",
+    "zone_cooling_curve_offset": "Décalage loi d'eau froid zone",
+    "zone_water_setpoint": "Consigne d'eau zone",
+    "zone_cooling_setpoint": "Consigne froid zone",
+    "tank_setpoint": "Consigne ballon",
+    "room_temperature": "Température ambiante",
+    "heat_energy_today": "Énergie chauffage aujourd'hui",
+    "cool_energy_today": "Énergie rafraîchissement aujourd'hui",
+    "tank_energy_today": "Énergie ballon aujourd'hui",
+    "heat_cost_today": "Coût chauffage aujourd'hui",
+    "cool_cost_today": "Coût rafraîchissement aujourd'hui",
+    "tank_cost_today": "Coût ballon aujourd'hui"
   }
 }

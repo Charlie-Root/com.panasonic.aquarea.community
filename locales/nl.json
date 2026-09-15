@@ -1,0 +1,51 @@
+{
+  "error": {
+    "missing_credentials": "Inloggegevens ontbreken. Verwijder het apparaat en koppel het opnieuw.",
+    "connection_failed": "Kan geen verbinding maken met Aquarea: {message}",
+    "no_tank": "Deze warmtepomp heeft geen warmwaterboiler.",
+    "unknown_zone": "Zone {{zone}} bestaat niet op deze warmtepomp.",
+    "no_current_setpoint": "Het huidige instelpunt is nog niet bekend; wacht op de volgende update.",
+    "relative_main_zone_only": "Een relatieve wijziging is alleen mogelijk op de hoofdzone.",
+    "no_cooling": "Deze warmtepomp ondersteunt geen koeling.",
+    "credentials_required": "E-mailadres en wachtwoord zijn verplicht.",
+    "invalid_credentials": "Inloggen geweigerd: controleer het e-mailadres en het wachtwoord.",
+    "device_not_in_account": "Dit account bevat dit apparaat niet. Log in met het account waarmee het apparaat is gekoppeld.",
+    "pair_session_invalid": "De koppelsessie is niet meer geldig: log opnieuw in.",
+    "no_devices_found": "Geen Comfort Cloud-apparaat gevonden op dit account.",
+    "no_convectors_found": "Geen Aquarea Home-convector gevonden op dit account."
+  },
+  "info": {
+    "yes": "Ja",
+    "no": "Nee",
+    "present": "Aanwezig",
+    "absent": "Niet aanwezig",
+    "supported": "Ondersteund",
+    "not_supported": "Niet ondersteund",
+    "unknown": "Onbekend",
+    "setpoint_absolute": "Absolute watertemperatuur",
+    "setpoint_offset": "Verschuiving van de weersafhankelijke stooklijn",
+    "sensor_water": "Watertemperatuur",
+    "sensor_external": "Externe thermostaat",
+    "sensor_internal": "Interne thermostaat",
+    "sensor_thermistor": "Thermistor",
+    "eco_heat": "Eco verwarmen",
+    "eco_cool": "Eco koelen",
+    "comfort_heat": "Comfort verwarmen",
+    "comfort_cool": "Comfort koelen",
+    "sensor_unknown": "Onbekend"
+  },
+  "capability": {
+    "zone_curve_offset": "Verschuiving stooklijn zone",
+    "zone_cooling_curve_offset": "Verschuiving koelcurve zone",
+    "zone_water_setpoint": "Waterinstelpunt zone",
+    "zone_cooling_setpoint": "Koelinstelpunt zone",
+    "tank_setpoint": "Instelpunt boiler",
+    "room_temperature": "Kamertemperatuur",
+    "heat_energy_today": "Energie verwarmen vandaag",
+    "cool_energy_today": "Energie koelen vandaag",
+    "tank_energy_today": "Energie boiler vandaag",
+    "heat_cost_today": "Kosten verwarmen vandaag",
+    "cool_cost_today": "Kosten koelen vandaag",
+    "tank_cost_today": "Kosten boiler vandaag"
+  }
+}

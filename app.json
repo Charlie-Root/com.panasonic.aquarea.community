@@ -93,29 +93,6 @@
       "insights": true,
       "icon": "/assets/capabilities/water_pressure.svg"
     },
-    "power_on": {
-      "type": "boolean",
-      "title": {
-        "en": "Heat pump",
-        "fr": "Pompe a chaleur",
-        "nl": "Warmtepomp"
-      },
-      "getable": true,
-      "setable": false,
-      "uiComponent": "sensor",
-      "insights": true,
-      "insightsTitleTrue": {
-        "en": "Heat pump turned on",
-        "fr": "Pompe a chaleur allumee",
-        "nl": "Warmtepomp ingeschakeld"
-      },
-      "insightsTitleFalse": {
-        "en": "Heat pump turned off",
-        "fr": "Pompe a chaleur eteinte",
-        "nl": "Warmtepomp uitgeschakeld"
-      },
-      "icon": "/assets/capabilities/power_on.svg"
-    },
     "pump_running": {
       "type": "boolean",
       "title": {
@@ -285,12 +262,12 @@
       "insights": true,
       "insightsTitleTrue": {
         "en": "Holiday mode on",
-        "fr": "Mode vacances actif",
+        "fr": "Mode vacances activé",
         "nl": "Vakantiemodus aan"
       },
       "insightsTitleFalse": {
         "en": "Holiday mode off",
-        "fr": "Mode vacances inactif",
+        "fr": "Mode vacances désactivé",
         "nl": "Vakantiemodus uit"
       },
       "icon": "/assets/capabilities/holiday_mode.svg"
@@ -625,7 +602,7 @@
             "type": "dropdown",
             "values": [
               {
-                "id": "power_on",
+                "id": "onoff",
                 "title": {
                   "en": "Heat pump",
                   "fr": "Pompe a chaleur",
@@ -739,7 +716,7 @@
             "type": "dropdown",
             "values": [
               {
-                "id": "power_on",
+                "id": "onoff",
                 "title": {
                   "en": "Heat pump",
                   "fr": "Pompe a chaleur",
@@ -2561,7 +2538,7 @@
         "measure_water_temperature",
         "measure_temperature.indoor",
         "measure_temperature.outdoor",
-        "power_on",
+        "onoff",
         "operation_direction",
         "special_status",
         "quiet_mode",

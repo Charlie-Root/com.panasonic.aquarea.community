@@ -39,6 +39,7 @@ const COMMAND_HANDLERS = {
   'target_temperature.zone': '_onSetZoneTemperature',
   'thermostat_mode': '_onCapabilityThermostatMode',
   'cooling_mode': '_onSetCoolingMode',
+  'onoff': '_onSetHeatpumpOnoff',
   'onoff.tank': '_onSetTankOnoff',
   'onoff.zone': '_onSetZoneOnoff',
   'quiet_mode': '_onSetQuietMode',
@@ -215,6 +216,7 @@ class AquareaDevice extends Homey.Device {
     caps.push(layout.zoneSetpointCap);
     if (layout.tankSetpointCap) caps.push(layout.tankSetpointCap);
     if (hasTank) caps.push('onoff.tank');
+    caps.push('onoff');
     caps.push('onoff.zone');
     if (layout.tankTempCap) caps.push(layout.tankTempCap);
     caps.push(layout.zoneTempCap);
@@ -222,7 +224,7 @@ class AquareaDevice extends Homey.Device {
     caps.push('measure_temperature.outdoor');
 
     // Operating states reported by the cloud (read-only).
-    caps.push('power_on', 'operation_direction', 'special_status');
+    caps.push('operation_direction', 'special_status');
     // Homey Mobile opens the last "picker" control by default. thermostat_mode
     // is therefore placed after the other pickers, so that the third tab opens
     // on "Operation mode".
@@ -387,7 +389,7 @@ class AquareaDevice extends Homey.Device {
       await this._setCapability('measure_temperature.outdoor', data.outdoorTemperature);
       await this._setCapability('measure_water_pressure', data.waterPressure);
       await this._setCapability('pump_running', data.pumpRunning);
-      await this._setCapability('power_on', data.powerOn);
+      await this._setCapability('onoff', data.powerOn);
       await this._setCapability('thermostat_mode', data.thermostatMode);
       await this._setCapability('cooling_mode', data.isCooling);
 
@@ -826,7 +828,7 @@ class AquareaDevice extends Homey.Device {
     await this._commit('thermostat_mode', value);
     // Every mode but 'off' is sent with operationStatus = 1, so the unit is
     // powered on by the command itself (see AquareaClient.setMode).
-    await this._commit('power_on', value !== 'off');
+    await this._commit('onoff', value !== 'off');
 
     // The heat/cool switch is a view of the mode: it must follow, and so must
     // the direction that decides which zone setpoint is shown and driven.
@@ -842,6 +844,18 @@ class AquareaDevice extends Homey.Device {
       await this._commit('onoff.zone', value !== 'dhw');
       if (value === 'heat_tank' || value === 'cool_tank' || value === 'dhw') await this._commit('onoff.tank', true);
       else if (value === 'heat' || value === 'cool') await this._commit('onoff.tank', false);
+    }
+    this._refreshSoon();
+  }
+
+  async _onSetHeatpumpOnoff(value) {
+    const on = Boolean(value);
+    this.log(`Command: heat pump on/off -> ${on}`);
+    await this.client.setOperationStatus(this.deviceId, on);
+    await this._commit('onoff', on);
+    if (!on) {
+      await this._commit('thermostat_mode', 'off');
+      await this._commit('onoff.zone', false);
     }
     this._refreshSoon();
   }
@@ -942,7 +956,7 @@ class AquareaDevice extends Homey.Device {
 
     await this._commit('cooling_mode', cooling);
     await this._commit('thermostat_mode', mode);
-    await this._commit('power_on', true);
+    await this._commit('onoff', true);
     await this._commit('onoff.zone', true);
     this._refreshSoon();
   }
@@ -1011,12 +1025,12 @@ class AquareaDevice extends Homey.Device {
   /**
    * Master on/off state, read by the `power_is` condition card.
    *
-   * `power_on` is written by the poll; on a device that has not polled yet
+   * `onoff` is written by the poll; on a device that has not polled yet
    * since the capability was introduced it is still null, so we fall back on
    * the operating mode, which reads 'off' while the unit is powered down.
    */
   flowIsPoweredOn() {
-    const value = this.hasCapability('power_on') ? this.getCapabilityValue('power_on') : null;
+    const value = this.hasCapability('onoff') ? this.getCapabilityValue('onoff') : null;
     if (typeof value === 'boolean') return value;
     return this.getCapabilityValue('thermostat_mode') !== 'off';
   }
@@ -1025,7 +1039,7 @@ class AquareaDevice extends Homey.Device {
   async flowSetPower(on) {
     this.log(`Flow: power -> ${on}`);
     await this.client.setOperationStatus(this.deviceId, on);
-    await this._commit('power_on', on);
+    await this._commit('onoff', on);
     if (!on) await this._commit('thermostat_mode', 'off');
     this._refreshSoon();
   }

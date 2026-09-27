@@ -232,14 +232,19 @@ class AquareaConvectorDevice extends Homey.Device {
         return;
       }
 
-      // Anything else is treated as a blip until it has happened often enough
-      // to be real: the convector used to drop out of Homey — breaking Flows
-      // and greying out its tiles — on a single network timeout.
-      this._pollFailures += 1;
-      if (this._pollFailures >= MAX_POLL_FAILURES) {
-        this.setUnavailable(this.homey.__('error.connection_failed', { message: err.message }))
-          .catch(() => {});
+      // A network blip is tolerated: the convector used to drop out of Homey —
+      // breaking Flows and greying out its tiles — on a single timeout. Any
+      // other error is real the first time it happens, so it goes offline at once.
+      if (this._client.isTransientNetworkError(err)) {
+        this._pollFailures += 1;
+        this.log(`Temporary network failure ${this._pollFailures}/${MAX_POLL_FAILURES}; keeping device available`);
+        if (this._pollFailures < MAX_POLL_FAILURES) return;
+      } else {
+        this._pollFailures = 0;
       }
+
+      this.setUnavailable(this.homey.__('error.connection_failed', { message: err.message }))
+        .catch(() => {});
     }
   }
 

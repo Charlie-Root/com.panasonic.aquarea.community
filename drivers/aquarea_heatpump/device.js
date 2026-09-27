@@ -222,7 +222,7 @@ class AquareaDevice extends Homey.Device {
     caps.push('measure_temperature.outdoor');
 
     // Operating states reported by the cloud (read-only).
-    caps.push('operation_direction', 'special_status');
+    caps.push('power_on', 'operation_direction', 'special_status');
     // Homey Mobile opens the last "picker" control by default. thermostat_mode
     // is therefore placed after the other pickers, so that the third tab opens
     // on "Operation mode".
@@ -387,6 +387,7 @@ class AquareaDevice extends Homey.Device {
       await this._setCapability('measure_temperature.outdoor', data.outdoorTemperature);
       await this._setCapability('measure_water_pressure', data.waterPressure);
       await this._setCapability('pump_running', data.pumpRunning);
+      await this._setCapability('power_on', data.powerOn);
       await this._setCapability('thermostat_mode', data.thermostatMode);
       await this._setCapability('cooling_mode', data.isCooling);
 
@@ -823,6 +824,9 @@ class AquareaDevice extends Homey.Device {
     this.log(`Command: thermostat_mode -> ${value}`);
     await this.client.setMode(this.deviceId, value, this._cachedDeviceData());
     await this._commit('thermostat_mode', value);
+    // Every mode but 'off' is sent with operationStatus = 1, so the unit is
+    // powered on by the command itself (see AquareaClient.setMode).
+    await this._commit('power_on', value !== 'off');
 
     // The heat/cool switch is a view of the mode: it must follow, and so must
     // the direction that decides which zone setpoint is shown and driven.
@@ -938,6 +942,7 @@ class AquareaDevice extends Homey.Device {
 
     await this._commit('cooling_mode', cooling);
     await this._commit('thermostat_mode', mode);
+    await this._commit('power_on', true);
     await this._commit('onoff.zone', true);
     this._refreshSoon();
   }
@@ -1003,10 +1008,24 @@ class AquareaDevice extends Homey.Device {
     return this._onSetCoolingMode(cooling);
   }
 
+  /**
+   * Master on/off state, read by the `power_is` condition card.
+   *
+   * `power_on` is written by the poll; on a device that has not polled yet
+   * since the capability was introduced it is still null, so we fall back on
+   * the operating mode, which reads 'off' while the unit is powered down.
+   */
+  flowIsPoweredOn() {
+    const value = this.hasCapability('power_on') ? this.getCapabilityValue('power_on') : null;
+    if (typeof value === 'boolean') return value;
+    return this.getCapabilityValue('thermostat_mode') !== 'off';
+  }
+
   /** General power on/off, without resetting the mode or the DHW permission. */
   async flowSetPower(on) {
     this.log(`Flow: power -> ${on}`);
     await this.client.setOperationStatus(this.deviceId, on);
+    await this._commit('power_on', on);
     if (!on) await this._commit('thermostat_mode', 'off');
     this._refreshSoon();
   }

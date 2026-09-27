@@ -93,6 +93,29 @@
       "insights": true,
       "icon": "/assets/capabilities/water_pressure.svg"
     },
+    "power_on": {
+      "type": "boolean",
+      "title": {
+        "en": "Heat pump",
+        "fr": "Pompe a chaleur",
+        "nl": "Warmtepomp"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Heat pump turned on",
+        "fr": "Pompe a chaleur allumee",
+        "nl": "Warmtepomp ingeschakeld"
+      },
+      "insightsTitleFalse": {
+        "en": "Heat pump turned off",
+        "fr": "Pompe a chaleur eteinte",
+        "nl": "Warmtepomp uitgeschakeld"
+      },
+      "icon": "/assets/capabilities/power_on.svg"
+    },
     "pump_running": {
       "type": "boolean",
       "title": {
@@ -602,6 +625,14 @@
             "type": "dropdown",
             "values": [
               {
+                "id": "power_on",
+                "title": {
+                  "en": "Heat pump",
+                  "fr": "Pompe a chaleur",
+                  "nl": "Warmtepomp"
+                }
+              },
+              {
                 "id": "cooling_mode",
                 "title": {
                   "en": "Cooling",
@@ -707,6 +738,14 @@
             "name": "capability",
             "type": "dropdown",
             "values": [
+              {
+                "id": "power_on",
+                "title": {
+                  "en": "Heat pump",
+                  "fr": "Pompe a chaleur",
+                  "nl": "Warmtepomp"
+                }
+              },
               {
                 "id": "cooling_mode",
                 "title": {
@@ -961,6 +1000,53 @@
       }
     ],
     "conditions": [
+      {
+        "id": "power_is",
+        "title": {
+          "en": "The heat pump is [[state]]",
+          "fr": "La pompe a chaleur est [[state]]",
+          "nl": "De warmtepomp is [[state]]"
+        },
+        "titleFormatted": {
+          "en": "[[device]] is [[state]]",
+          "fr": "[[device]] est [[state]]",
+          "nl": "[[device]] is [[state]]"
+        },
+        "hint": {
+          "en": "Checks the main power switch of the unit, regardless of the operation mode or of what it is doing right now.",
+          "fr": "Verifie l'interrupteur general de l'unite, quel que soit le mode de fonctionnement ou ce qu'elle fait a cet instant.",
+          "nl": "Controleert de hoofdschakelaar van het toestel, ongeacht de bedrijfsmodus of wat het op dit moment doet."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "capabilities=pump_running"
+          },
+          {
+            "name": "state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "title": {
+                  "en": "turned on",
+                  "fr": "allumee",
+                  "nl": "ingeschakeld"
+                }
+              },
+              {
+                "id": "off",
+                "title": {
+                  "en": "turned off",
+                  "fr": "eteinte",
+                  "nl": "uitgeschakeld"
+                }
+              }
+            ]
+          }
+        ]
+      },
       {
         "id": "capability_is_true",
         "title": {
@@ -2475,6 +2561,7 @@
         "measure_water_temperature",
         "measure_temperature.indoor",
         "measure_temperature.outdoor",
+        "power_on",
         "operation_direction",
         "special_status",
         "quiet_mode",
@@ -2619,6 +2706,14 @@
                 "en": "Cool + hot water",
                 "fr": "Rafraichissement + ECS",
                 "nl": "Koelen + warm water"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "fr": "Arret",
+                "nl": "Uit"
               }
             }
           ]

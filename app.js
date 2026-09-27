@@ -81,6 +81,12 @@ class AquareaApp extends Homey.App {
   }
 
   _registerConditions() {
+    // Master power switch. It gets its own card rather than an entry in
+    // `capability_is_true`, so the Flow reads "the heat pump is turned
+    // on / off" instead of relying on the inverted condition.
+    this.homey.flow.getConditionCard('power_is')
+      .registerRunListener(({ device, state }) => device.flowIsPoweredOn() === (state === 'on'));
+
     this.homey.flow.getConditionCard('capability_is_true')
       .registerRunListener(({ device, capability }) => (
         device.hasCapability(capability) && device.getCapabilityValue(capability) === true

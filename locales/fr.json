@@ -47,5 +47,26 @@
     "heat_cost_today": "Coût chauffage aujourd'hui",
     "cool_cost_today": "Coût rafraîchissement aujourd'hui",
     "tank_cost_today": "Coût ballon aujourd'hui"
+  },
+  "timeline": {
+    "excerpt": "**__name__** : __changes__",
+    "power_on": "**mise en marche**",
+    "power_off": "**arrêt**",
+    "tank_on": "ballon ECS activé",
+    "tank_off": "ballon ECS désactivé",
+    "zone_on": "zone de chauffage activée",
+    "zone_off": "zone de chauffage désactivée",
+    "defrost_on": "dégivrage démarré",
+    "defrost_off": "dégivrage terminé",
+    "mode_changed": "mode **__mode__**",
+    "mode": {
+      "auto": "Auto",
+      "heat": "Chauffage",
+      "heat_tank": "Chauffage + ECS",
+      "dhw": "ECS uniquement",
+      "cool": "Rafraîchissement",
+      "cool_tank": "Rafraîchissement + ECS",
+      "off": "Arrêt"
+    }
   }
 }

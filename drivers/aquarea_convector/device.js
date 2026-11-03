@@ -2,6 +2,7 @@
 
 const Homey = require('homey');
 const AquareaHomeClient = require('../../lib/AquareaHomeClient');
+const TimelineNotifier = require('../../lib/TimelineNotifier');
 
 // Default polling interval: 60 seconds.
 const DEFAULT_POLL_INTERVAL = 60;
@@ -37,6 +38,9 @@ class AquareaConvectorDevice extends Homey.Device {
     this._client = null;
     this._pollTimer = null;
     this._pollFailures = 0;
+
+    // Posts power / mode changes to the Homey timeline.
+    this._timeline = new TimelineNotifier(this);
 
     // Removes the old experimental alarm capabilities from already installed
     // devices, without recreating the device or affecting its Flows.
@@ -183,7 +187,7 @@ class AquareaConvectorDevice extends Homey.Device {
 
       // onoff
       if (status.powerState !== undefined) {
-        await this.setCapabilityValue('onoff', !!status.powerState).catch(() => {});
+        await this._setTracked('onoff', !!status.powerState);
       }
 
       // measure_temperature (room temperature)
@@ -207,7 +211,7 @@ class AquareaConvectorDevice extends Homey.Device {
       // thermostat_mode
       if (status.operationMode !== null && status.operationMode !== undefined) {
         const modeStr = MODE_INT_TO_STR[status.operationMode] || 'auto';
-        await this.setCapabilityValue('thermostat_mode', modeStr).catch(() => {});
+        await this._setTracked('thermostat_mode', modeStr);
       }
 
       // convector_fan_speed
@@ -290,8 +294,27 @@ class AquareaConvectorDevice extends Homey.Device {
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
+  /**
+   * Writes a polled value and reports it to the timeline when it really
+   * changed. The first value after a (re)start (previous === null) is not a
+   * state change and is not reported.
+   */
+  async _setTracked(cap, value) {
+    const previous = this.getCapabilityValue(cap);
+    try {
+      await this.setCapabilityValue(cap, value);
+    } catch (err) {
+      this.error(`setCapabilityValue(${cap}) failed:`, err.message);
+      return;
+    }
+    if (previous !== null && typeof previous !== 'undefined' && previous !== value) {
+      this._timeline.stateChanged(cap, value, previous);
+    }
+  }
+
   async onDeleted() {
     this._stopPolling();
+    this._timeline.destroy();
     this.log('AquareaConvectorDevice deleted:', this.getName());
   }
 
@@ -299,6 +322,7 @@ class AquareaConvectorDevice extends Homey.Device {
   // keeps polling on behalf of a device instance that no longer exists.
   async onUninit() {
     this._stopPolling();
+    this._timeline.destroy();
   }
 
 }

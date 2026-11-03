@@ -47,5 +47,26 @@
     "heat_cost_today": "Kosten verwarmen vandaag",
     "cool_cost_today": "Kosten koelen vandaag",
     "tank_cost_today": "Kosten boiler vandaag"
+  },
+  "timeline": {
+    "excerpt": "**__name__**: __changes__",
+    "power_on": "staat nu **aan**",
+    "power_off": "staat nu **uit**",
+    "tank_on": "warmwaterboiler aan",
+    "tank_off": "warmwaterboiler uit",
+    "zone_on": "verwarmingszone aan",
+    "zone_off": "verwarmingszone uit",
+    "defrost_on": "ontdooien gestart",
+    "defrost_off": "ontdooien klaar",
+    "mode_changed": "modus **__mode__**",
+    "mode": {
+      "auto": "Auto",
+      "heat": "Verwarmen",
+      "heat_tank": "Verwarmen + warm water",
+      "dhw": "Warm tapwater",
+      "cool": "Koelen",
+      "cool_tank": "Koelen + warm water",
+      "off": "Uit"
+    }
   }
 }

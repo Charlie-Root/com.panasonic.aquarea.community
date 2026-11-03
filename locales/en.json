@@ -47,5 +47,26 @@
     "heat_cost_today": "Heat cost today",
     "cool_cost_today": "Cool cost today",
     "tank_cost_today": "Tank cost today"
+  },
+  "timeline": {
+    "excerpt": "**__name__**: __changes__",
+    "power_on": "turned **on**",
+    "power_off": "turned **off**",
+    "tank_on": "hot water tank on",
+    "tank_off": "hot water tank off",
+    "zone_on": "heating zone on",
+    "zone_off": "heating zone off",
+    "defrost_on": "defrost started",
+    "defrost_off": "defrost finished",
+    "mode_changed": "mode **__mode__**",
+    "mode": {
+      "auto": "Auto",
+      "heat": "Heat",
+      "heat_tank": "Heat + hot water",
+      "dhw": "Domestic hot water",
+      "cool": "Cool",
+      "cool_tank": "Cool + hot water",
+      "off": "Off"
+    }
   }
 }

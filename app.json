@@ -2494,6 +2494,31 @@
         {
           "type": "group",
           "label": {
+            "en": "Timeline",
+            "fr": "Fil d'actualité",
+            "nl": "Tijdlijn"
+          },
+          "children": [
+            {
+              "id": "timeline_notifications",
+              "type": "checkbox",
+              "value": true,
+              "label": {
+                "en": "Post state changes to the timeline",
+                "fr": "Publier les changements d'état dans le fil d'actualité",
+                "nl": "Statuswijzigingen in de tijdlijn plaatsen"
+              },
+              "hint": {
+                "en": "Adds a timeline entry when the device turns on or off, changes mode or starts/finishes defrosting. Changes within a few seconds are combined into one entry.",
+                "fr": "Ajoute une entrée quand l'appareil s'allume ou s'éteint, change de mode ou démarre/termine un dégivrage. Les changements rapprochés sont regroupés.",
+                "nl": "Plaatst een melding in de tijdlijn als het apparaat aan of uit gaat, van modus wisselt of begint/stopt met ontdooien. Wijzigingen binnen enkele seconden worden samengevoegd."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
             "en": "About / Disclaimer",
             "fr": "A propos / Avertissement",
             "nl": "Over / Disclaimer"
@@ -2982,6 +3007,31 @@
                 "nl": "Laatste cloud-update"
               },
               "value": "-"
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Timeline",
+            "fr": "Fil d'actualité",
+            "nl": "Tijdlijn"
+          },
+          "children": [
+            {
+              "id": "timeline_notifications",
+              "type": "checkbox",
+              "value": true,
+              "label": {
+                "en": "Post state changes to the timeline",
+                "fr": "Publier les changements d'état dans le fil d'actualité",
+                "nl": "Statuswijzigingen in de tijdlijn plaatsen"
+              },
+              "hint": {
+                "en": "Adds a timeline entry when the device turns on or off, changes mode or starts/finishes defrosting. Changes within a few seconds are combined into one entry.",
+                "fr": "Ajoute une entrée quand l'appareil s'allume ou s'éteint, change de mode ou démarre/termine un dégivrage. Les changements rapprochés sont regroupés.",
+                "nl": "Plaatst een melding in de tijdlijn als het apparaat aan of uit gaat, van modus wisselt of begint/stopt met ontdooien. Wijzigingen binnen enkele seconden worden samengevoegd."
+              }
             }
           ]
         },

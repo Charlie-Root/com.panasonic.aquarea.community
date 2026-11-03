@@ -2,6 +2,7 @@
 
 const Homey = require('homey');
 const AquareaClient = require('../../lib/AquareaClient');
+const TimelineNotifier = require('../../lib/TimelineNotifier');
 
 // Default polling interval: 5 minutes.
 // ⚠️  Deliberately high, to avoid rate-limiting / IP bans from Aquarea Smart
@@ -71,6 +72,9 @@ class AquareaDevice extends Homey.Device {
 
     // Capabilities whose command listener is already registered.
     this._listeners = new Set();
+
+    // Posts power / mode / defrost changes to the Homey timeline.
+    this._timeline = new TimelineNotifier(this);
 
     // Layout deduced from the last poll (DHW tank, zone sensor type, nature of
     // the setpoint). It drives the capability list: no point showing a tank
@@ -512,6 +516,7 @@ class AquareaDevice extends Homey.Device {
     // hardware state change, so nothing is fired.
     if (previous !== null && typeof previous !== 'undefined' && !this._sameValue(previous, value)) {
       this.homey.app.triggerCapabilityChange(this, cap, value, previous);
+      this._timeline.stateChanged(cap, value, previous);
     }
   }
 
@@ -1176,11 +1181,13 @@ class AquareaDevice extends Homey.Device {
     this.log(`Aquarea device deleted: ${this.deviceId}`);
     this._stopPolling();
     this._cancelRefresh();
+    this._timeline.destroy();
   }
 
   async onUninit() {
     this._stopPolling();
     this._cancelRefresh();
+    this._timeline.destroy();
   }
 
 }
